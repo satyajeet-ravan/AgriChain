@@ -1,0 +1,283 @@
+ * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-image: url('farm.jpg');
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 35px;
+        }
+
+        .app-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .app-tagline {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #a0aec0;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"] {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .role-option {
+            position: relative;
+        }
+
+        .role-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .role-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 18px 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+            text-align: center;
+        }
+
+        .role-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .role-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .role-option input[type="radio"]:checked + .role-label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .role-option input[type="radio"]:checked + .role-label .role-name {
+            color: #667eea;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #a0aec0;
+            padding: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 17px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .signup-section {
+            text-align: center;
+            font-size: 15px;
+            color: #4a5568;
+        }
+
+        .signup-section a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+
+        .help-text {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .help-icon {
+            font-size: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .help-link {
+            color: #718096;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .app-name {
+                font-size: 24px;
+            }
+
+            .role-selector {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .role-label {
+                padding: 15px 8px;
+            }
+
+            .role-icon {
+                font-size: 28px;
+            }
+
+            .role-name {
+                font-size: 12px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .role-selector {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+   
