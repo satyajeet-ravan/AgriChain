@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriChain - Login</title>
+    <link rel = "stylesheet" href="AgriChain.css"/>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <div class="logo">🌾</div>
+            <h1 class="app-name">AgriChain</h1>
+            <p class="app-tagline">Supply Chain Management</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="userInput">Mobile Number or Email</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">📱</span>
+                    <input 
+                        type="text" 
+                        id="userInput" 
+                        placeholder="Enter mobile or email"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        👁️
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Select Your Role</label>
+                <div class="role-selector">
+                    <div class="role-option">
+                        <input type="radio" name="role" id="farmer" value="farmer" required>
+                        <label for="farmer" class="role-label">
+                            <div class="role-icon">👨‍🌾</div>
+                            <div class="role-name">Farmer</div>
+                        </label>
+                    </div>
+
+                    <div class="role-option">
+                        <input type="radio" name="role" id="buyer" value="buyer">
+                        <label for="buyer" class="role-label">
+                            <div class="role-icon">🛒</div>
+                            <div class="role-name">Buyer</div>
+                        </label>
+                    </div>
+
+                    <div class="role-option">
+                        <input type="radio" name="role" id="warehouse" value="warehouse">
+                        <label for="warehouse" class="role-label">
+                            <div class="role-icon">🏭</div>
+                            <div class="role-name">Warehouse</div>
+                        </label>
+                    </div>
+
+                    <div class="role-option">
+                        <input type="radio" name="role" id="transport" value="transport">
+                        <label for="transport" class="role-label">
+                            <div class="role-icon">🚚</div>
+                            <div class="role-name">Transport</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <div class="forgot-password">
+                <a href="#forgot">Forgot Password?</a>
+            </div>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <div class="signup-section">
+            Don't have an account?<a href="#signup">Sign Up</a>
+        </div>
+
+        <div class="help-text">
+            <a href="#help" class="help-link">
+                <span class="help-icon">❓</span>
+                Need Help?
+            </a>
+        </div>
+    </div>
+<script src = "AgriChain.js"></script>
+</body>
+</html>
