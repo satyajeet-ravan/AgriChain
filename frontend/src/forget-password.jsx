@@ -1,5 +1,5 @@
 import "./forget-password.css"
-
+import { Link } from "react-router-dom"
 function ForgetPasswd(){
     return(
         <>
@@ -17,6 +17,7 @@ function ForgetPasswd(){
     <button type="submit">
       Send Password Reset Link
     </button>
+    <Link to="/" className="login-link">Back To Login</Link>
   </form>
 </div>
 </>
