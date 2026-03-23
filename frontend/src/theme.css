@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --color-earth-deep: #2B2B28;
+  --color-earth: #6B4F3A;
+  --color-clay: #A07855;
+  --color-wheat: #E7D7B1;
+  --color-linen: #F6F3EA;
+  --color-olive: #6F7D61;
+  --color-olive-soft: #9AA78C;
+
+  --color-bg: #F1EBDD;
+  --color-surface: #FBF9F2;
+  --color-border: #E5DFCF;
+  --color-text: var(--color-earth-deep);
+  --color-text-soft: #8A8174;
+
+  --color-primary: var(--color-earth);
+  --color-primary-hover: #5A4030;
+  --color-focus: #9AA78C33;
+  --color-error: #B04A3A;
+  --color-disabled: #C8B9A6;
+
+  --shadow-card: 0 20px 40px rgba(40,30,20,0.12);
+  --shadow-button: 0 6px 14px rgba(50,30,20,0.18);
+
+  --radius-card: 18px;
+  --radius-input: 10px;
+  --radius-button: 12px;
+
+  --font-body: "Inter", sans-serif;
+  --font-heading: "Libre Baskerville", serif;
+
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 26px;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  color: var(--color-text);
+  font-weight: 800;
+}
