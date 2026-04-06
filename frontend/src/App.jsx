@@ -6,7 +6,7 @@ import { ForgetPasswd } from './pages/forget-password'
 import Home from './pages/home'
 import Product from './pages/porducts'
 import Productdetail from './pages/product-detail'
-import { ProtectedRoute } from './components/protected-route'
+import Orders from './pages/orders'
 
 function App() {
   return (
@@ -23,21 +23,15 @@ function App() {
 
         {/*Protected Routes*/}
         <Route path='/orders'
-          element={<ProtectedRoute>
-            <Order />
-          </ProtectedRoute>}
+          element={<Orders />}
         />
 
         <Route path='/products'
-          element={<ProtectedRoute>
-            <Product />
-          </ProtectedRoute>}
+          element={<Product />}
         />
 
         <Route path='/product-detail'
-          element={<ProtectedRoute>
-            <Productdetail />
-          </ProtectedRoute>}
+          element={<Productdetail />}
         />
         {/*Page not found route*/}
         <Route path='*' element={<h1>Error 404 Page Not Found</h1>} />

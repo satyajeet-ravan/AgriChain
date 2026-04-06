@@ -1,0 +1,12 @@
+nav{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-link{
+    text-decoration: none;
+    
+}
+
+

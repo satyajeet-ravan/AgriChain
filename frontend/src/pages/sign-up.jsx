@@ -2,6 +2,8 @@ import PhoneInput from "react-phone-number-input"
 import "./sign-up.css"
 import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import Home from "./home"
+import { useNavigate } from "react-router-dom"
 
 
 function Signup() {
@@ -10,6 +12,7 @@ function Signup() {
     const [confirmPassword, setComfirmPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const navigation = useNavigate()
     return (
         <>
             <div className="sign-up-container">
@@ -47,7 +50,7 @@ function Signup() {
                                 Passwords do not match
                             </p>
                         )}
-                    <button type="submit" disabled={password != confirmPassword}>Sign Up</button>
+                    <button type="submit" disabled={password != confirmPassword} onClick={() => navigation("/")}>Sign Up</button>
                 </form>
             </div>
         </>
