@@ -2,16 +2,18 @@ import { Link, useNavigate } from "react-router-dom"
 import "./login.css"
 import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import PhoneInput from "react-phone-number-input"
 
 function Login(){
     const [showPassword, setShowPassword] = useState(false)
     const navigation = useNavigate()
+    const [phone, setPhone] = useState("")
     return(
         <>
         <div className="login-container">
             <form action="" className="login-card">
                 <h2>Login To Your Account</h2>
-        <input type="email" name="Email" id="email" placeholder="Enter Your Email" required/>
+        <PhoneInput defaultCountry="IN" value={phone} onChange={setPhone} placeholder="Enter Your Phone Number" />
         <div className="password-wrapper">
         <input type={ showPassword ? "text" : "password" }
          name="Password" 

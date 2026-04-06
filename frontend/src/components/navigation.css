@@ -1,12 +1,35 @@
-nav{
-    position: relative;
-    display: flex;
-    flex-direction: row;
+body {
+  margin: 0;
 }
 
-.nav-link{
-    text-decoration: none;
-    
+.navbar {
+  background-color: var(--color-linen);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: var(--shadow-card);
+}
+
+
+.navigation {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--color-earth-deep);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 22px;
+  font-family: var(--font-heading);
+}
+
+.nav-link:hover {
+  color: var(--color-text);
 }
 
 
