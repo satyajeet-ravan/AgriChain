@@ -3,6 +3,7 @@ function Home(){
     return(
         <>
         <Navbar />
+        
         </>
     )
 }

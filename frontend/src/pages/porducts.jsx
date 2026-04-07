@@ -1,9 +1,12 @@
 import Navbar from "../components/navigation"
+import Searchbar from "../components/search-bar"
+import Categories from "../components/categories"
 function Product(){
     return(
         <>
-        <h1>Products</h1>
         <Navbar />
+        <Searchbar />
+        <Categories />
         </>
     )
 }
