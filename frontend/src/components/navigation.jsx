@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaHome, FaShoppingCart, FaRegUser } from "react-icons/fa";
-import { AiFillProduct } from "react-icons/ai";
+import { CiShop } from "react-icons/ci";
 import "./navigation.css";
 
 function Navbar() {
@@ -13,7 +13,7 @@ function Navbar() {
 
       <nav className="navigation">
         <Link className="nav-link" to="/"><FaHome /> Home</Link>
-        <Link className="nav-link" to="/products"><AiFillProduct /> Products</Link>
+        <Link className="nav-link" to="/products"><CiShop /> Marketplace </Link>
         <Link className="nav-link" to="/cart"><FaShoppingCart /> My Cart</Link>
         <Link className="nav-link" to="/profile"><FaRegUser /></Link>
       </nav>
