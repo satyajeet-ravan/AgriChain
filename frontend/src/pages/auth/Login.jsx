@@ -56,10 +56,10 @@ export default function Login() {
       <div className="auth-right">
         <div className="auth-form-container">
           <h1 className="auth-form-title">Sign In</h1>
-          <p className="auth-form-subtitle">Choose your role and enter your credentials</p>
+          {/* <p className="auth-form-subtitle">Choose your role and enter your credentials</p>
 
           {/* Role Selector */}
-          <div className="role-selector">
+          {/* <div className="role-selector">
             {[
               { id: 'farmer', icon: '👨‍🌾', name: 'Farmer' },
               { id: 'buyer',  icon: '🏪',  name: 'Buyer' },
@@ -70,15 +70,15 @@ export default function Login() {
                 <span className="role-name">{r.name}</span>
               </button>
             ))}
-          </div>
+          </div> */}
 
           {/* OAuth Placeholder */}
-          <div className="auth-oauth">
+          {/* /*<div className="auth-oauth">
             <button className="oauth-btn" type="button">
               <span>🌐</span> Continue with Google
             </button>
-          </div>
-          <div className="auth-divider">or sign in with email</div>
+          </div> */ }
+          <div className="auth-divider">Sign in with email</div>
 
           {/* Form */}
           <form onSubmit={handleSubmit}>

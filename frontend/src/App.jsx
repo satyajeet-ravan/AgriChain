@@ -12,7 +12,7 @@ import Contact     from './pages/public/Contact';
 // Auth Pages
 import Login          from './pages/auth/Login';
 import Register       from './pages/auth/Register';
-import ForgotPassword from './pages/auth/ForgotPassword';
+
 
 // Farmer Pages
 import FarmerDashboard  from './pages/farmer/FarmerDashboard';
@@ -72,7 +72,6 @@ export default function App() {
       {/* ── Auth ── */}
       <Route path="/login"           element={<GuestRoute><Login /></GuestRoute>} />
       <Route path="/register"        element={<GuestRoute><Register /></GuestRoute>} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       {/* ── Farmer ── */}
       <Route path="/farmer/dashboard" element={<ProtectedRoute allowedRole="farmer"><FarmerDashboard /></ProtectedRoute>} />
