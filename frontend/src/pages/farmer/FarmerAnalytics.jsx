@@ -26,9 +26,7 @@ export default function FarmerAnalytics() {
       <div className="page-title">Analytics Dashboard</div>
       <div className="page-subtitle">Performance insights for your farm listings</div>
 
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)', marginBottom: '1.5rem' }}>
-        <StatsCard icon="👁️" label="Profile Views" value={(stats.profileViews || 0).toLocaleString()} change="22% this month" changeType="up" color="var(--info)" bg="#d1ecf1" />
-        <StatsCard icon="💬" label="Enquiries" value={String(stats.enquiries || 0)} change="14% this month" changeType="up" color="var(--orange)" bg="var(--orange-light)" />
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(2,1fr)', marginBottom: '1.5rem' }}>
         <StatsCard icon="✅" label="Conversion Rate" value={`${stats.conversionRate || 0}%`} change="5% improvement" changeType="up" color="var(--success)" bg="#d4edda" />
         <StatsCard icon="⭐" label="Avg. Rating" value={String(stats.avgRating || 0)} color="var(--warning)" bg="#fff3cd" />
       </div>

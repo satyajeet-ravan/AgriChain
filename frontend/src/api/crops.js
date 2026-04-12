@@ -10,6 +10,9 @@ export const cropsAPI = {
   getCategories: () =>
     client.get('/crops/categories').then(r => r.data),
 
+  getVarieties: () =>
+    client.get('/crops/varieties').then(r => r.data),
+
   getFarmers: () =>
     client.get('/crops/farmers').then(r => r.data),
 

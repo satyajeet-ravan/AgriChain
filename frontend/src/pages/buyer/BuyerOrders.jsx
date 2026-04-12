@@ -1,11 +1,26 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { ordersAPI } from '../../api/orders';
+import { reportsAPI } from '../../api/reports';
+
+const REPORT_TYPES = [
+  { value: 'fraud', label: 'Fraud' },
+  { value: 'quality', label: 'Quality Issue' },
+  { value: 'payment', label: 'Payment Issue' },
+  { value: 'delivery', label: 'Delivery Issue' },
+];
+const SEVERITIES = ['low', 'medium', 'high', 'critical'];
 
 export default function BuyerOrders() {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Report modal state
+  const [reportOrder, setReportOrder] = useState(null);
+  const [reportForm, setReportForm] = useState({ type: 'fraud', description: '', severity: 'medium' });
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState('');
 
   useEffect(() => {
     ordersAPI.getBuyerOrders()
@@ -16,6 +31,36 @@ export default function BuyerOrders() {
 
   const statusBadge = s => s === 'Delivered' ? 'badge-success' : s === 'Shipped' ? 'badge-info' : 'badge-warning';
   const statusIcon  = s => s === 'Delivered' ? '✅' : s === 'Shipped' ? '🚚' : '⏳';
+
+  function openReport(order) {
+    setReportOrder(order);
+    setReportForm({ type: 'fraud', description: '', severity: 'medium' });
+    setReportSuccess('');
+  }
+
+  function closeReport() {
+    setReportOrder(null);
+    setReportSuccess('');
+  }
+
+  async function submitReport(e) {
+    e.preventDefault();
+    setReportLoading(true);
+    try {
+      await reportsAPI.create({
+        reported_user_id: reportOrder.farmerId,
+        type: reportForm.type,
+        description: reportForm.description,
+        severity: reportForm.severity,
+      });
+      setReportSuccess('Report submitted successfully.');
+      setTimeout(closeReport, 1500);
+    } catch {
+      setReportSuccess('Failed to submit report.');
+    } finally {
+      setReportLoading(false);
+    }
+  }
 
   if (loading) {
     return <DashboardLayout><div style={{ textAlign: 'center', padding: '4rem', color: 'var(--gray)' }}>Loading orders...</div></DashboardLayout>;
@@ -45,7 +90,12 @@ export default function BuyerOrders() {
                     <td><strong style={{ color: 'var(--primary)' }}>₹{o.amount.toLocaleString()}</strong></td>
                     <td style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>{o.date}</td>
                     <td><span className={`badge ${statusBadge(o.status)}`}>{statusIcon(o.status)} {o.status}</span></td>
-                    <td><button className="btn btn-outline btn-sm" onClick={e => { e.stopPropagation(); setSelected(o); }}>Track</button></td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '0.375rem' }}>
+                        <button className="btn btn-outline btn-sm" onClick={e => { e.stopPropagation(); setSelected(o); }}>Track</button>
+                        <button className="btn btn-sm" style={{ background: '#fdf2f2', color: 'var(--danger)', border: '1px solid #f5c6cb', whiteSpace: 'nowrap' }} onClick={e => { e.stopPropagation(); openReport(o); }}>🚩 Report</button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
                 {orders.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray)' }}>No orders yet</td></tr>}
@@ -87,6 +137,47 @@ export default function BuyerOrders() {
           </div>
         )}
       </div>
+
+      {/* Report Modal */}
+      {reportOrder && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={closeReport}>
+          <div className="card" style={{ width: '100%', maxWidth: 480, margin: '1rem' }} onClick={e => e.stopPropagation()}>
+            <div className="card-header">
+              <span className="card-title">🚩 Report Farmer</span>
+              <button style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: 'var(--gray)' }} onClick={closeReport}>✕</button>
+            </div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--gray)', marginBottom: '1rem' }}>
+              Reporting <strong style={{ color: 'var(--danger)' }}>{reportOrder.farmer}</strong> for order <strong>{reportOrder.id}</strong>
+            </div>
+            {reportSuccess ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center', color: reportSuccess.includes('success') ? 'var(--success)' : 'var(--danger)', fontWeight: 600 }}>{reportSuccess}</div>
+            ) : (
+              <form onSubmit={submitReport}>
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Type *</label>
+                  <select required value={reportForm.type} onChange={e => setReportForm(p => ({ ...p, type: e.target.value }))}>
+                    {REPORT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                </div>
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Severity *</label>
+                  <select required value={reportForm.severity} onChange={e => setReportForm(p => ({ ...p, severity: e.target.value }))}>
+                    {SEVERITIES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div className="form-group" style={{ marginBottom: '1rem' }}>
+                  <label style={{ fontWeight: 600, fontSize: '0.85rem' }}>Description *</label>
+                  <textarea required rows={4} placeholder="Describe the issue in detail..." value={reportForm.description} onChange={e => setReportForm(p => ({ ...p, description: e.target.value }))} />
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                  <button type="button" className="btn btn-outline" onClick={closeReport}>Cancel</button>
+                  <button type="submit" className="btn btn-primary" disabled={reportLoading}>{reportLoading ? 'Submitting...' : 'Submit Report'}</button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }

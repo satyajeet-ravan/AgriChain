@@ -41,7 +41,7 @@ export default function Login() {
           <h2>Welcome Back to AgriChain</h2>
           <p>Continue building fair, transparent, and direct agricultural trade. Your dashboard is waiting.</p>
           <div className="auth-feature-list">
-            {['Access live market prices', 'Chat directly with farmers/buyers', 'Track all your orders in real-time', 'View earnings & analytics'].map(f => (
+            {['Access live market prices', 'Connect directly with farmers/buyers', 'Track all your orders in real-time', 'View earnings & analytics'].map(f => (
               <div key={f} className="auth-feature">
                 <div className="auth-feature-icon">✓</div>
                 <span>{f}</span>
@@ -93,9 +93,7 @@ export default function Login() {
                 <button type="button" className="toggle-btn" onClick={() => setShowPw(!showPw)}>{showPw ? '🙈' : '👁️'}</button>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
-              <Link to="/forgot-password" style={{ fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600 }}>Forgot password?</Link>
-            </div>
+            
             {error && <div style={{ color: 'var(--danger)', fontSize: '0.875rem', marginBottom: '1rem' }}>⚠️ {error}</div>}
             <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
               {loading ? '⏳ Signing in...' : '→ Sign In'}

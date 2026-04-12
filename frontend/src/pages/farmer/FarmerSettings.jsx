@@ -100,9 +100,7 @@ export default function FarmerSettings() {
               {[
                 { label: 'New order received', defaultChecked: true },
                 { label: 'Payment credited', defaultChecked: true },
-                { label: 'Buyer message', defaultChecked: true },
                 { label: 'Crop listing approved', defaultChecked: true },
-                { label: 'Spoilage report update', defaultChecked: false },
                 { label: 'Weekly analytics summary', defaultChecked: false },
               ].map(n => (
                 <div key={n.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.875rem 0', borderBottom: '1px solid var(--border-light)' }}>

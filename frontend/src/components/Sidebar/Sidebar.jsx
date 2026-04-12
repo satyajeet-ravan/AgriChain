@@ -7,10 +7,8 @@ const farmerLinks = [
   { to: '/farmer/crops',      icon: '🌾', label: 'My Crops' },
   { to: '/farmer/add-crop',   icon: '➕', label: 'Add Crop' },
   { to: '/farmer/orders',     icon: '📦', label: 'Orders', badge: 3 },
-  { to: '/farmer/spoilage',   icon: '⚠️', label: 'Spoilage' },
   { to: '/farmer/earnings',   icon: '💰', label: 'Earnings' },
   { to: '/farmer/analytics',  icon: '📈', label: 'Analytics' },
-  { to: '/farmer/chat',       icon: '💬', label: 'Chat', badge: 1 },
   { to: '/farmer/settings',   icon: '⚙️', label: 'Settings' },
 ];
 
@@ -19,9 +17,6 @@ const buyerLinks = [
   { to: '/marketplace',       icon: '🛒', label: 'Marketplace' },
   { to: '/buyer/cart',        icon: '🛍️', label: 'Cart', badge: 3 },
   { to: '/buyer/orders',      icon: '📦', label: 'Orders' },
-  { to: '/buyer/wishlist',    icon: '❤️', label: 'Wishlist' },
-  { to: '/buyer/analytics',   icon: '📈', label: 'Analytics' },
-  { to: '/buyer/chat',        icon: '💬', label: 'Chat', badge: 2 },
   { to: '/buyer/settings',    icon: '⚙️', label: 'Settings' },
 ];
 

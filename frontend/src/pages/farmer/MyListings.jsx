@@ -48,7 +48,7 @@ export default function MyListings() {
         <div className="data-table-wrap">
           <table className="data-table">
             <thead>
-              <tr><th>Crop</th><th>Category</th><th>Price</th><th>Qty</th><th>Views</th><th>Enquiries</th><th>Status</th><th>Actions</th></tr>
+              <tr><th>Crop</th><th>Category</th><th>Price</th><th>Qty</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {list.map(crop => (
@@ -65,8 +65,6 @@ export default function MyListings() {
                   <td><span className="badge badge-primary">{crop.category}</span></td>
                   <td><strong style={{ color: 'var(--primary)' }}>₹{crop.price}/{crop.unit}</strong></td>
                   <td>{crop.quantity}{crop.unit}</td>
-                  <td>👁️ {crop.views || 0}</td>
-                  <td>💬 {crop.enquiries || 0}</td>
                   <td>
                     <span className={`badge ${crop.available ? 'badge-success' : 'badge-danger'}`}>
                       {crop.available ? 'Active' : 'Inactive'}
@@ -84,7 +82,7 @@ export default function MyListings() {
                 </tr>
               ))}
               {list.length === 0 && (
-                <tr><td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray)' }}>No listings yet. <Link to="/farmer/add-crop" style={{ color: 'var(--primary)' }}>Add your first crop</Link></td></tr>
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray)' }}>No listings yet. <Link to="/farmer/add-crop" style={{ color: 'var(--primary)' }}>Add your first crop</Link></td></tr>
               )}
             </tbody>
           </table>

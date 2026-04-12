@@ -5,7 +5,7 @@ import './HowItWorks.css';
 const farmerSteps = [
   { n: 1, icon: '📝', title: 'Create Account', desc: 'Register with your Aadhaar/PAN and complete KYC. Verification takes under 10 minutes.' },
   { n: 2, icon: '🌾', title: 'List Your Crops', desc: 'Add crop details — variety, quantity, photos, and your asking price. It\'s free to list.' },
-  { n: 3, icon: '💬', title: 'Connect with Buyers', desc: 'Receive enquiries from verified buyers. Negotiate price directly through our secure chat.' },
+  { n: 3, icon: '🤝', title: 'Connect with Buyers', desc: 'Receive enquiries from verified buyers. Negotiate price and terms directly on the platform.' },
   { n: 4, icon: '📦', title: 'Fulfil Orders', desc: 'Confirm orders and schedule pickup. Our logistics partners handle delivery.' },
   { n: 5, icon: '💰', title: 'Get Paid', desc: 'Receive payment directly to your bank account within 24-48 hours of delivery confirmation.' },
 ];
@@ -13,7 +13,7 @@ const farmerSteps = [
 const buyerSteps = [
   { n: 1, icon: '🏪', title: 'Register as Buyer', desc: 'Sign up with your business details. Get verified in under 24 hours.' },
   { n: 2, icon: '🔍', title: 'Browse & Search', desc: 'Explore thousands of listed crops. Filter by category, price, location, and quality.' },
-  { n: 3, icon: '💬', title: 'Contact Farmers', desc: 'Chat directly with farmers. Ask questions, negotiate, and verify crop details.' },
+  { n: 3, icon: '🤝', title: 'Contact Farmers', desc: 'Connect directly with farmers. Ask questions, negotiate, and verify crop details.' },
   { n: 4, icon: '🛒', title: 'Place Orders', desc: 'Add items to cart and place orders. Multiple payment options available.' },
   { n: 5, icon: '🚚', title: 'Track Delivery', desc: 'Real-time tracking from farm to your warehouse. Get delivery updates via SMS and app.' },
 ];

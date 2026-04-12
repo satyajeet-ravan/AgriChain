@@ -1,28 +1,18 @@
 import { Router } from 'express';
-import { analyticsData, farmerStats, buyerStats, transactions } from './data.js';
+import { analyticsData, farmerStats, transactions } from './data.js';
 import { verifyToken } from '../../middleware/auth.js';
 
 const router = Router();
 
 // GET /api/analytics/farmer
 router.get('/farmer', verifyToken, (req, res) => {
-  const stats = farmerStats[req.user.id] || { totalEarnings: 0, activeOrders: 0, listedCrops: 0, avgRating: 0, reviews: 0, profileViews: 0, enquiries: 0, conversionRate: 0 };
+  const stats = farmerStats[req.user.id] || { totalEarnings: 0, activeOrders: 0, listedCrops: 0, avgRating: 0, reviews: 0, conversionRate: 0 };
   res.json({
     stats,
     monthlyRevenue: analyticsData.monthlyRevenue,
     months: analyticsData.months,
     topCrops: analyticsData.topCrops,
     weeklyEngagement: analyticsData.weeklyEngagement,
-  });
-});
-
-// GET /api/analytics/buyer
-router.get('/buyer', verifyToken, (req, res) => {
-  const stats = buyerStats[req.user.id] || { totalOrders: 0, totalSpent: 0, inTransit: 0, wishlistCount: 0 };
-  res.json({
-    stats,
-    monthlyRevenue: analyticsData.monthlyRevenue,
-    months: analyticsData.months,
   });
 });
 

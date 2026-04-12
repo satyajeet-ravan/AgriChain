@@ -19,19 +19,14 @@ import FarmerDashboard  from './pages/farmer/FarmerDashboard';
 import AddCrop          from './pages/farmer/AddCrop';
 import MyListings       from './pages/farmer/MyListings';
 import FarmerOrders     from './pages/farmer/FarmerOrders';
-import Spoilage         from './pages/farmer/Spoilage';
 import Earnings         from './pages/farmer/Earnings';
 import FarmerAnalytics  from './pages/farmer/FarmerAnalytics';
-import FarmerChat       from './pages/farmer/FarmerChat';
 import FarmerSettings   from './pages/farmer/FarmerSettings';
 
 // Buyer Pages
 import BuyerDashboard  from './pages/buyer/BuyerDashboard';
 import Cart            from './pages/buyer/Cart';
 import BuyerOrders     from './pages/buyer/BuyerOrders';
-import Wishlist        from './pages/buyer/Wishlist';
-import BuyerAnalytics  from './pages/buyer/BuyerAnalytics';
-import BuyerChat       from './pages/buyer/BuyerChat';
 import BuyerSettings   from './pages/buyer/BuyerSettings';
 
 // Admin Pages
@@ -84,19 +79,14 @@ export default function App() {
       <Route path="/farmer/crops"     element={<ProtectedRoute allowedRole="farmer"><MyListings /></ProtectedRoute>} />
       <Route path="/farmer/add-crop"  element={<ProtectedRoute allowedRole="farmer"><AddCrop /></ProtectedRoute>} />
       <Route path="/farmer/orders"    element={<ProtectedRoute allowedRole="farmer"><FarmerOrders /></ProtectedRoute>} />
-      <Route path="/farmer/spoilage"  element={<ProtectedRoute allowedRole="farmer"><Spoilage /></ProtectedRoute>} />
       <Route path="/farmer/earnings"  element={<ProtectedRoute allowedRole="farmer"><Earnings /></ProtectedRoute>} />
       <Route path="/farmer/analytics" element={<ProtectedRoute allowedRole="farmer"><FarmerAnalytics /></ProtectedRoute>} />
-      <Route path="/farmer/chat"      element={<ProtectedRoute allowedRole="farmer"><FarmerChat /></ProtectedRoute>} />
       <Route path="/farmer/settings"  element={<ProtectedRoute allowedRole="farmer"><FarmerSettings /></ProtectedRoute>} />
 
       {/* ── Buyer ── */}
       <Route path="/buyer/dashboard"  element={<ProtectedRoute allowedRole="buyer"><BuyerDashboard /></ProtectedRoute>} />
       <Route path="/buyer/cart"       element={<ProtectedRoute allowedRole="buyer"><Cart /></ProtectedRoute>} />
       <Route path="/buyer/orders"     element={<ProtectedRoute allowedRole="buyer"><BuyerOrders /></ProtectedRoute>} />
-      <Route path="/buyer/wishlist"   element={<ProtectedRoute allowedRole="buyer"><Wishlist /></ProtectedRoute>} />
-      <Route path="/buyer/analytics"  element={<ProtectedRoute allowedRole="buyer"><BuyerAnalytics /></ProtectedRoute>} />
-      <Route path="/buyer/chat"       element={<ProtectedRoute allowedRole="buyer"><BuyerChat /></ProtectedRoute>} />
       <Route path="/buyer/settings"   element={<ProtectedRoute allowedRole="buyer"><BuyerSettings /></ProtectedRoute>} />
 
       {/* ── Admin ── */}

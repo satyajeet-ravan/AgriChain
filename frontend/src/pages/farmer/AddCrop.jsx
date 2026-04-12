@@ -1,24 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { cropsAPI } from '../../api/crops';
 import './AddCrop.css';
 
 export default function AddCrop() {
-  const [form, setForm] = useState({ name: '', category: '', variety: '', quantity: '', unit: 'kg', price: '', minOrder: '', description: '', state: '', city: '', harvestDate: '', organic: false, available: true });
+  const [varieties, setVarieties] = useState({});
+  const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
+  const [varietyId, setVarietyId] = useState('');
+  const [form, setForm] = useState({ quantity: '', unit: 'kg', price: '', minOrder: '', description: '', harvestDate: '', organic: false, available: true });
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    cropsAPI.getVarieties().then(setVarieties).catch(() => {});
+  }, []);
+
+  const categoryList = Object.keys(varieties);
+  const subCategoryList = category ? Object.keys(varieties[category] || {}) : [];
+  const varietyList = category && subCategory ? (varieties[category]?.[subCategory] || []) : [];
+
   function handleChange(k, v) { setForm(p => ({ ...p, [k]: v })); }
+
+  function resetForm() {
+    setCategory('');
+    setSubCategory('');
+    setVarietyId('');
+    setForm({ quantity: '', unit: 'kg', price: '', minOrder: '', description: '', harvestDate: '', organic: false, available: true });
+  }
 
   async function handleSave(e) {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      await cropsAPI.create(form);
+      await cropsAPI.create({ variety_id: varietyId, ...form });
       setSaved(true);
-      setForm({ name: '', category: '', variety: '', quantity: '', unit: 'kg', price: '', minOrder: '', description: '', state: '', city: '', harvestDate: '', organic: false, available: true });
+      resetForm();
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to add crop.');
@@ -48,21 +67,25 @@ export default function AddCrop() {
             <div className="card">
               <div className="card-header"><span className="card-title">🌾 Crop Details</span></div>
               <div className="form-group">
-                <label>Crop Name *</label>
-                <input required placeholder="e.g., Basmati Rice" value={form.name} onChange={e => handleChange('name', e.target.value)} />
+                <label>Category *</label>
+                <select required value={category} onChange={e => { setCategory(e.target.value); setSubCategory(''); setVarietyId(''); }}>
+                  <option value="">Select Category</option>
+                  {categoryList.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label>Category *</label>
-                  <select required value={form.category} onChange={e => handleChange('category', e.target.value)}>
-                    <option value="">Select</option>
-                    {['Grains', 'Fruits', 'Vegetables', 'Spices', 'Processed'].map(c => <option key={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Variety</label>
-                  <input placeholder="e.g., Pusa 1121" value={form.variety} onChange={e => handleChange('variety', e.target.value)} />
-                </div>
+              <div className="form-group">
+                <label>Sub-Category *</label>
+                <select required value={subCategory} onChange={e => { setSubCategory(e.target.value); setVarietyId(''); }} disabled={!category}>
+                  <option value="">Select Sub-Category</option>
+                  {subCategoryList.map(sc => <option key={sc} value={sc}>{sc}</option>)}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Variety *</label>
+                <select required value={varietyId} onChange={e => setVarietyId(e.target.value)} disabled={!subCategory}>
+                  <option value="">Select Variety</option>
+                  {varietyList.map(v => <option key={v.id} value={v.id}>{v.variety}</option>)}
+                </select>
               </div>
               <div className="form-group">
                 <label>Description</label>
@@ -77,23 +100,6 @@ export default function AddCrop() {
                   <input type="checkbox" checked={form.available} onChange={e => handleChange('available', e.target.checked)} style={{ accentColor: 'var(--primary)', width: 16, height: 16 }} />
                   ✅ Available Now
                 </label>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-header"><span className="card-title">📍 Location</span></div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label>State *</label>
-                  <select required value={form.state} onChange={e => handleChange('state', e.target.value)}>
-                    <option value="">Select</option>
-                    {['Punjab', 'Maharashtra', 'Karnataka', 'Gujarat', 'UP', 'Bihar', 'Haryana', 'Kerala', 'Tamil Nadu'].map(s => <option key={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>City / Village *</label>
-                  <input required placeholder="Your location" value={form.city} onChange={e => handleChange('city', e.target.value)} />
-                </div>
               </div>
             </div>
           </div>

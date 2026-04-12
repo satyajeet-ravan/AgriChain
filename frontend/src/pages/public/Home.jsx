@@ -6,6 +6,12 @@ import { cropsAPI } from '../../api/crops';
 import { statsAPI } from '../../api/stats';
 import './Home.css';
 
+const testimonials = [
+  { id: 1, name: 'Arjun Mehta', role: 'Wholesale Buyer', text: 'AgriChain cut out 3 middlemen for me. I now get fresh produce directly from farmers at 40% lower cost. Revolutionary platform!', avatar: 'https://randomuser.me/api/portraits/men/12.jpg', rating: 5 },
+  { id: 2, name: 'Sunita Devi', role: 'Farmer, Bihar', text: 'Before AgriChain, I earned ₹8/kg for my wheat. Now I earn ₹35/kg selling directly. My family income tripled in one season!', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', rating: 5 },
+  { id: 3, name: 'Rohit Traders', role: 'Restaurant Chain', text: "Consistent quality, transparent pricing, and real-time tracking. We've sourced 50+ tons of vegetables through AgriChain this year.", avatar: 'https://randomuser.me/api/portraits/men/55.jpg', rating: 5 },
+];
+
 function HeroCard({ crops }) {
   const live = crops.slice(0, 4);
   return (
@@ -27,18 +33,15 @@ function HeroCard({ crops }) {
 export default function Home() {
   const [crops, setCrops] = useState([]);
   const [stats, setStats] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       cropsAPI.getAll().catch(() => []),
       statsAPI.getPlatformStats().catch(() => []),
-      statsAPI.getTestimonials().catch(() => []),
-    ]).then(([cropsData, statsData, testimonialsData]) => {
+    ]).then(([cropsData, statsData]) => {
       setCrops(cropsData);
       setStats(statsData);
-      setTestimonials(testimonialsData);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -158,7 +161,7 @@ export default function Home() {
             {[
               { n: 1, icon: '📝', title: 'Register & Verify', desc: 'Sign up as a Farmer or Buyer. Complete KYC verification in under 10 minutes.' },
               { n: 2, icon: '🌾', title: 'List or Browse', desc: 'Farmers list crops with photos & prices. Buyers browse by category, location, or price.' },
-              { n: 3, icon: '🤝', title: 'Connect & Negotiate', desc: 'Chat directly with the other party. Agree on price, quantity, and delivery terms.' },
+              { n: 3, icon: '🤝', title: 'Connect & Negotiate', desc: 'Connect directly with the other party. Agree on price, quantity, and delivery terms.' },
               { n: 4, icon: '🚚', title: 'Order & Deliver', desc: 'Place the order securely. Track delivery in real-time from farm to doorstep.' },
             ].map(s => (
               <div key={s.n} className="step-card">

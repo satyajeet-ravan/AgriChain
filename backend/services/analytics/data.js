@@ -11,11 +11,7 @@ export const analyticsData = {
 };
 
 export const farmerStats = {
-  1: { totalEarnings: 52350, activeOrders: 7, listedCrops: 8, avgRating: 4.8, reviews: 124, profileViews: 1240, enquiries: 87, conversionRate: 34 },
-};
-
-export const buyerStats = {
-  2: { totalOrders: 34, totalSpent: 120000, inTransit: 2, wishlistCount: 3 },
+  1: { totalEarnings: 52350, activeOrders: 7, listedCrops: 8, avgRating: 4.8, reviews: 124, conversionRate: 34 },
 };
 
 export const transactions = [

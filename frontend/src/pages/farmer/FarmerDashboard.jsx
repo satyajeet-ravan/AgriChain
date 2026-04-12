@@ -125,8 +125,6 @@ export default function FarmerDashboard() {
             {[
               { icon: '➕', label: 'Add New Crop', link: '/farmer/add-crop', color: 'var(--primary)', bg: 'var(--accent-light)' },
               { icon: '📦', label: 'View Orders', link: '/farmer/orders', color: 'var(--info)', bg: '#d1ecf1' },
-              { icon: '💬', label: 'Open Chat', link: '/farmer/chat', color: 'var(--orange)', bg: 'var(--orange-light)' },
-              { icon: '⚠️', label: 'Report Spoilage', link: '/farmer/spoilage', color: 'var(--danger)', bg: '#fdf2f2' },
               { icon: '📈', label: 'Analytics', link: '/farmer/analytics', color: 'var(--success)', bg: '#d4edda' },
               { icon: '💰', label: 'Earnings', link: '/farmer/earnings', color: 'var(--warning)', bg: '#fff3cd' },
             ].map(a => (

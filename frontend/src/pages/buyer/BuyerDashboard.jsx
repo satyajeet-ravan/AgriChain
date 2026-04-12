@@ -4,23 +4,19 @@ import DashboardLayout from '../../layouts/DashboardLayout';
 import StatsCard from '../../components/StatsCard/StatsCard';
 import { ordersAPI } from '../../api/orders';
 import { cropsAPI } from '../../api/crops';
-import { analyticsAPI } from '../../api/analytics';
 
 export default function BuyerDashboard() {
   const [orders, setOrders] = useState([]);
   const [crops, setCrops] = useState([]);
-  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       ordersAPI.getBuyerOrders().catch(() => []),
       cropsAPI.getAll().catch(() => []),
-      analyticsAPI.getBuyerAnalytics().catch(() => ({ stats: {} })),
-    ]).then(([ordersData, cropsData, analyticsData]) => {
+    ]).then(([ordersData, cropsData]) => {
       setOrders(ordersData);
       setCrops(cropsData);
-      setStats(analyticsData.stats || {});
     }).finally(() => setLoading(false));
   }, []);
 
@@ -35,11 +31,10 @@ export default function BuyerDashboard() {
       <div className="page-title">Buyer Dashboard</div>
       <div className="page-subtitle">Welcome back! Here's your procurement overview.</div>
 
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4,1fr)', marginBottom: '1.5rem' }}>
-        <StatsCard icon="🛒" label="Total Orders" value={String(stats.totalOrders || orders.length)} change="8 this month" changeType="up" color="var(--primary)" bg="var(--accent-light)" />
-        <StatsCard icon="💰" label="Total Spent" value={`₹${((stats.totalSpent || 0) / 1000).toFixed(0)}K`} change="12% vs last month" changeType="up" color="var(--orange)" bg="var(--orange-light)" />
-        <StatsCard icon="🚚" label="In Transit" value={String(stats.inTransit || 0)} color="var(--info)" bg="#d1ecf1" />
-        <StatsCard icon="❤️" label="Wishlist Items" value={String(stats.wishlistCount || 0)} color="var(--danger)" bg="#fdf2f2" />
+      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3,1fr)', marginBottom: '1.5rem' }}>
+        <StatsCard icon="🛒" label="Total Orders" value={String(orders.length)} change="8 this month" changeType="up" color="var(--primary)" bg="var(--accent-light)" />
+        <StatsCard icon="💰" label="Total Spent" value={`₹${(orders.reduce((s, o) => s + (o.amount || 0), 0) / 1000).toFixed(0)}K`} change="12% vs last month" changeType="up" color="var(--orange)" bg="var(--orange-light)" />
+        <StatsCard icon="🚚" label="In Transit" value={String(orders.filter(o => o.status === 'Shipped').length)} color="var(--info)" bg="#d1ecf1" />
       </div>
 
       <div className="two-col">
@@ -89,13 +84,11 @@ export default function BuyerDashboard() {
 
       <div className="card" style={{ marginTop: '1.5rem' }}>
         <div className="card-header"><span className="card-title">⚡ Quick Actions</span></div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem' }}>
           {[
             { icon: '🛒', label: 'View Cart', link: '/buyer/cart', color: 'var(--primary)', bg: 'var(--accent-light)' },
             { icon: '📦', label: 'My Orders', link: '/buyer/orders', color: 'var(--info)', bg: '#d1ecf1' },
-            { icon: '❤️', label: 'Wishlist', link: '/buyer/wishlist', color: 'var(--danger)', bg: '#fdf2f2' },
-            { icon: '💬', label: 'Chat', link: '/buyer/chat', color: 'var(--orange)', bg: 'var(--orange-light)' },
-            { icon: '📈', label: 'Analytics', link: '/buyer/analytics', color: 'var(--success)', bg: '#d4edda' },
+            { icon: '🛒', label: 'Marketplace', link: '/marketplace', color: 'var(--orange)', bg: 'var(--orange-light)' },
           ].map(a => (
             <Link key={a.label} to={a.link} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '1.25rem', borderRadius: 'var(--radius-lg)', background: a.bg, textDecoration: 'none', transition: 'all 0.2s', border: '1px solid rgba(0,0,0,0.04)' }}>
               <span style={{ fontSize: '1.75rem' }}>{a.icon}</span>

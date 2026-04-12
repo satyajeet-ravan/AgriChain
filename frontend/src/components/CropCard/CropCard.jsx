@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CropCard.css';
 
@@ -8,15 +7,8 @@ function StarRating({ rating }) {
   return <span className="stars">{stars}</span>;
 }
 
-export default function CropCard({ crop, onAddToCart, onWishlist, isWishlisted = false, showActions = true }) {
+export default function CropCard({ crop, onAddToCart, showActions = true }) {
   const navigate = useNavigate();
-  const [wishlisted, setWishlisted] = useState(isWishlisted);
-
-  function handleWishlist(e) {
-    e.stopPropagation();
-    setWishlisted(!wishlisted);
-    onWishlist?.(crop);
-  }
 
   function handleAddToCart(e) {
     e.stopPropagation();
@@ -31,11 +23,6 @@ export default function CropCard({ crop, onAddToCart, onWishlist, isWishlisted =
           {crop.organic && <span className="badge badge-success">🌿 Organic</span>}
           {!crop.available && <span className="badge badge-danger">Out of Stock</span>}
         </div>
-        {showActions && (
-          <button className={`crop-card-wishlist${wishlisted ? ' active' : ''}`} onClick={handleWishlist} title="Add to wishlist">
-            {wishlisted ? '❤️' : '🤍'}
-          </button>
-        )}
         {!crop.available && (
           <div className="unavailable-overlay"><span>Unavailable</span></div>
         )}

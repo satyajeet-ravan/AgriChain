@@ -8,10 +8,7 @@ import cropsRoutes from "./services/crops/routes.js";
 import ordersRoutes from "./services/orders/routes.js";
 import usersRoutes from "./services/users/routes.js";
 import cartRoutes from "./services/cart/routes.js";
-import wishlistRoutes from "./services/wishlist/routes.js";
-import chatRoutes from "./services/chat/routes.js";
 import analyticsRoutes from "./services/analytics/routes.js";
-import spoilageRoutes from "./services/spoilage/routes.js";
 import reportsRoutes from "./services/reports/routes.js";
 import statsRoutes from "./services/stats/routes.js";
 import settingsRoutes from "./services/settings/routes.js";
@@ -39,10 +36,7 @@ app.use("/api/crops", cropsRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/wishlist", wishlistRoutes);
-app.use("/api/chat", chatRoutes);
 app.use("/api/analytics", analyticsRoutes);
-app.use("/api/spoilage", spoilageRoutes);
 app.use("/api/reports", reportsRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/settings", settingsRoutes);
@@ -61,5 +55,5 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`AgriChain API running at http://localhost:${port}`);
-  console.log(`Microservices: auth, crops, orders, users, cart, wishlist, chat, analytics, spoilage, reports, stats, settings`);
+  console.log(`Microservices: auth, crops, orders, users, cart, analytics, reports, stats, settings`);
 });
