@@ -1,15 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import PublicLayout from '../../layouts/PublicLayout';
 import { cropsAPI } from '../../api/crops';
+import { cartAPI } from '../../api/cart';
 import { useAuth } from '../../utils/AuthContext';
 
 export default function CropDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [crop, setCrop] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cartMsg, setCartMsg] = useState('');
+
+  function handleAddToCart() {
+    if (!user) return navigate('/login');
+    cartAPI.addItem(crop.id, 1)
+      .then(() => { setCartMsg('Added to cart!'); setTimeout(() => setCartMsg(''), 2000); })
+      .catch(() => { setCartMsg('Failed to add to cart.'); setTimeout(() => setCartMsg(''), 2000); });
+  }
 
   useEffect(() => {
     cropsAPI.getById(id)
@@ -116,9 +126,14 @@ export default function CropDetail() {
               </div>
             )}
 
+            {cartMsg && (
+              <div style={{ marginBottom: '0.75rem', padding: '0.625rem 1rem', borderRadius: 'var(--radius-md)', background: cartMsg.includes('Failed') ? '#fdf2f2' : '#d4edda', color: cartMsg.includes('Failed') ? 'var(--danger)' : '#155724', fontWeight: 600, fontSize: '0.875rem' }}>
+                {cartMsg}
+              </div>
+            )}
             <div style={{ display: 'flex', gap: '0.75rem' }}>
-              {user?.role === 'buyer' && crop.available && (
-                <Link to="/buyer/cart" className="btn btn-primary btn-lg" style={{ flex: 1, textAlign: 'center' }}>🛒 Add to Cart</Link>
+              {(user?.role === 'buyer' || user?.role === 'both') && crop.available && (
+                <button className="btn btn-primary btn-lg" style={{ flex: 1 }} onClick={handleAddToCart}>🛒 Add to Cart</button>
               )}
               <Link to="/marketplace" className="btn btn-outline btn-lg" style={{ flex: 1, textAlign: 'center' }}>← Back to Marketplace</Link>
             </div>

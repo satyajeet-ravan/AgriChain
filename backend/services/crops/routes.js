@@ -180,7 +180,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/crops — farmer adds crop
-router.post('/', verifyToken, requireRole('farmer'), async (req, res) => {
+router.post('/', verifyToken, requireRole('farmer', 'both'), async (req, res) => {
   const { variety_id, quantity, unit, price, description, harvestDate, available } = req.body;
 
   if (!variety_id || !quantity || !price) {

@@ -1,14 +1,27 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PublicLayout from '../../layouts/PublicLayout';
 import CropCard from '../../components/CropCard/CropCard';
 import { cropsAPI } from '../../api/crops';
+import { cartAPI } from '../../api/cart';
+import { useAuth } from '../../utils/AuthContext';
 import './Marketplace.css';
 
 export default function Marketplace() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [crops, setCrops] = useState([]);
   const [categories, setCategories] = useState([]);
   const [farmers, setFarmers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cartMsg, setCartMsg] = useState('');
+
+  function handleAddToCart(crop) {
+    if (!user) return navigate('/login');
+    cartAPI.addItem(crop.id, 1)
+      .then(() => { setCartMsg(`${crop.name} added to cart!`); setTimeout(() => setCartMsg(''), 2000); })
+      .catch(() => { setCartMsg('Failed to add to cart.'); setTimeout(() => setCartMsg(''), 2000); });
+  }
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
@@ -160,10 +173,16 @@ export default function Marketplace() {
               </select>
             </div>
 
+            {cartMsg && (
+              <div style={{ position: 'fixed', top: 80, right: 24, background: cartMsg.includes('Failed') ? 'var(--danger)' : 'var(--success)', color: '#fff', padding: '0.75rem 1.25rem', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '0.875rem', zIndex: 1000, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+                {cartMsg}
+              </div>
+            )}
+
             {filtered.length > 0 ? (
               <div className="marketplace-grid">
                 {filtered.map(crop => (
-                  <CropCard key={crop.id} crop={crop} showActions />
+                  <CropCard key={crop.id} crop={crop} showActions onAddToCart={handleAddToCart} />
                 ))}
               </div>
             ) : (

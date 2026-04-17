@@ -71,7 +71,7 @@ export default function BuyerOrders() {
       <div className="page-title">My Orders</div>
       <div className="page-subtitle">Track and manage all your purchases</div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 380px' : '1fr', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: selected ? 'minmax(0, 1fr) 340px' : '1fr', gap: '1.5rem' }}>
         <div className="card">
           <div className="card-header">
             <span className="card-title">📦 Order History</span>
@@ -105,7 +105,7 @@ export default function BuyerOrders() {
         </div>
 
         {selected && (
-          <div className="card" style={{ position: 'sticky', top: 'calc(var(--navbar-height) + 54px + 1.5rem)' }}>
+          <div className="card" style={{ position: 'sticky', top: 'calc(var(--navbar-height) + 54px + 1.5rem)', maxHeight: 'calc(100vh - var(--navbar-height) - 54px - 3rem)', overflowY: 'auto' }}>
             <div className="card-header">
               <span className="card-title">📋 {selected.id}</span>
               <button style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: 'var(--gray)' }} onClick={() => setSelected(null)}>✕</button>
@@ -120,19 +120,26 @@ export default function BuyerOrders() {
               </div>
             ))}
             <div style={{ marginTop: '1.25rem' }}>
-              <div style={{ fontWeight: 700, fontSize: '0.875rem', marginBottom: '1rem' }}>Delivery Progress</div>
-              {['Order Placed', 'Confirmed by Farmer', 'Picked Up', 'In Transit', 'Delivered'].map((step, i) => {
-                const stepIdx = selected.status === 'Delivered' ? 4 : selected.status === 'Shipped' ? 3 : selected.status === 'Processing' ? 2 : 1;
-                const done = i <= stepIdx;
-                return (
-                  <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? 'var(--primary)' : 'var(--border)', color: done ? '#fff' : 'var(--gray-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
-                      {done ? '✓' : i + 1}
+              <div style={{ fontWeight: 700, fontSize: '0.875rem', marginBottom: '1rem' }}>Order Progress</div>
+              {(() => {
+                const isRejected = selected.status === 'Rejected';
+                const stepIdx = selected.status === 'Delivered' ? 2 : selected.status === 'Processing' ? 1 : 0;
+                const steps = [
+                  { label: 'Order Requested', done: stepIdx >= 0 },
+                  { label: 'Farmer Reviewing', done: stepIdx >= 1 },
+                  isRejected
+                    ? { label: 'Rejected', done: true, rejected: true }
+                    : { label: 'Accepted', done: stepIdx >= 2 },
+                ];
+                return steps.map((step, i) => (
+                  <div key={step.label} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: step.rejected ? 'var(--danger)' : step.done ? 'var(--primary)' : 'var(--border)', color: step.done || step.rejected ? '#fff' : 'var(--gray-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
+                      {step.rejected ? '✕' : step.done ? '✓' : i + 1}
                     </div>
-                    <span style={{ fontSize: '0.85rem', fontWeight: done ? 600 : 400, color: done ? 'var(--dark)' : 'var(--gray-light)' }}>{step}</span>
+                    <span style={{ fontSize: '0.85rem', fontWeight: step.done || step.rejected ? 600 : 400, color: step.rejected ? 'var(--danger)' : step.done ? 'var(--dark)' : 'var(--gray-light)' }}>{step.label}</span>
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
           </div>
         )}

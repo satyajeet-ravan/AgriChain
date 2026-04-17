@@ -1,7 +1,11 @@
 import { Router } from 'express';
-import { carts, getNextId } from './data.js';
 import supabase from '../../config/supabase.js';
 import { verifyToken, requireRole } from '../../middleware/auth.js';
+
+// In-memory cart storage keyed by userId
+const carts = {};
+let nextId = 1;
+function getNextId() { return nextId++; }
 
 const router = Router();
 
@@ -24,6 +28,7 @@ async function fetchCrop(cropId) {
     price: Number(data.price_per_unit) || 0,
     unit: data.unit || 'kg',
     quantity: Number(data.quantity) || 0,
+    farmerId: data.farmer_id,
     farmer: prof.full_name || '',
     location: prof.address || '',
     image: data.image_url || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
@@ -32,7 +37,7 @@ async function fetchCrop(cropId) {
 }
 
 // GET /api/cart
-router.get('/', verifyToken, requireRole('buyer'), async (req, res) => {
+router.get('/', verifyToken, requireRole('buyer', 'both'), async (req, res) => {
   const userCart = carts[req.user.id] || [];
   const enriched = await Promise.all(
     userCart.map(async item => {
@@ -44,7 +49,7 @@ router.get('/', verifyToken, requireRole('buyer'), async (req, res) => {
 });
 
 // POST /api/cart
-router.post('/', verifyToken, requireRole('buyer'), async (req, res) => {
+router.post('/', verifyToken, requireRole('buyer', 'both'), async (req, res) => {
   const { cropId, quantity } = req.body;
   if (!cropId) return res.status(400).json({ error: 'cropId is required.' });
 
@@ -63,7 +68,7 @@ router.post('/', verifyToken, requireRole('buyer'), async (req, res) => {
 });
 
 // PUT /api/cart/:id
-router.put('/:id', verifyToken, requireRole('buyer'), async (req, res) => {
+router.put('/:id', verifyToken, requireRole('buyer', 'both'), async (req, res) => {
   const userCart = carts[req.user.id] || [];
   const item = userCart.find(i => i.id === Number(req.params.id));
   if (!item) return res.status(404).json({ error: 'Cart item not found.' });
@@ -74,7 +79,7 @@ router.put('/:id', verifyToken, requireRole('buyer'), async (req, res) => {
 });
 
 // DELETE /api/cart/:id
-router.delete('/:id', verifyToken, requireRole('buyer'), (req, res) => {
+router.delete('/:id', verifyToken, requireRole('buyer', 'both'), (req, res) => {
   if (!carts[req.user.id]) return res.status(404).json({ error: 'Cart item not found.' });
   const idx = carts[req.user.id].findIndex(i => i.id === Number(req.params.id));
   if (idx === -1) return res.status(404).json({ error: 'Cart item not found.' });
@@ -84,7 +89,7 @@ router.delete('/:id', verifyToken, requireRole('buyer'), (req, res) => {
 });
 
 // DELETE /api/cart — clear entire cart
-router.delete('/', verifyToken, requireRole('buyer'), (req, res) => {
+router.delete('/', verifyToken, requireRole('buyer', 'both'), (req, res) => {
   carts[req.user.id] = [];
   res.json({ message: 'Cart cleared.' });
 });
