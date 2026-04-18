@@ -89,7 +89,7 @@ router.put('/:id/status', verifyToken, requireRole('admin'), async (req, res) =>
       return res.status(400).json({ error: 'No fields to update.' });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await req.supabase
       .from('profiles')
       .update(updates)
       .eq('id', req.params.id)
