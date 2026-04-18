@@ -1,410 +1,754 @@
 # AgriChain - Project Summary
 
-> **Last updated:** 2026-04-12
-
-## 1. Project Name & Description
-
-**AgriChain** is a full-stack agricultural marketplace platform that connects Indian farmers directly with buyers, eliminating middlemen. The platform provides role-based dashboards for three user types — Farmers, Buyers, and Admins — with features including crop listing, ordering, real-time chat, analytics, spoilage reporting, and platform administration.
+> **Last updated:** 2026-04-18
 
 **Authors:** Rajgaurav Patil, Satyajeet Ravan, Shravan Patil, Parth Madrewar
 
 ---
 
-## 2. Directory Structure
+## 1. Project Overview
 
-```
-AgriChain/
-├── PROJECT_SUMMARY.md              # This file
-├── README.md                       # Project README
-│
-├── backend/                        # Express.js API server (Microservice architecture)
-│   ├── package.json                # Backend dependencies & config
-│   ├── server.js                   # Main Express server — mounts all 12 microservice routes, CORS, error handlers
-│   ├── config/
-│   │   └── db.js                   # Database config placeholder (for future DB integration)
-│   ├── middleware/
-│   │   └── auth.js                 # JWT auth middleware: generateToken(), verifyToken(), requireRole()
-│   └── services/                   # Microservice modules — each has routes.js (endpoints) and data.js (in-memory store)
-│       ├── auth/
-│       │   ├── data.js             # Seed users (6 users: 3 farmers, 2 buyers, 1 admin) with bcryptjs hashed passwords
-│       │   └── routes.js           # Login, register, get profile, update profile, change password
-│       ├── crops/
-│       │   ├── data.js             # 12 crop listings, 6 categories, 4 farmer profiles
-│       │   └── routes.js           # CRUD crops with filtering, sorting, search, farmer/admin permissions
-│       ├── orders/
-│       │   ├── data.js             # 4 farmer orders, 3 buyer orders with ID generators
-│       │   └── routes.js           # Farmer/buyer/admin order views, place order, update status
-│       ├── cart/
-│       │   ├── data.js             # Per-user cart storage (keyed by userId)
-│       │   └── routes.js           # Get cart, add/update/remove items, clear cart
-│       ├── wishlist/
-│       │   ├── data.js             # Per-user wishlist storage (crop ID arrays)
-│       │   └── routes.js           # Get wishlist, add/remove crops
-│       ├── chat/
-│       │   ├── data.js             # 3 contacts, 5 seed messages with conversation keys
-│       │   └── routes.js           # Get contacts, get/send messages (conversation-based)
-│       ├── analytics/
-│       │   ├── data.js             # Monthly revenue, farmer/buyer stats, transaction history
-│       │   └── routes.js           # Farmer/buyer/admin analytics, earnings with transactions
-│       ├── spoilage/
-│       │   ├── data.js             # 2 spoilage reports with ID generator
-│       │   └── routes.js           # Get/create spoilage reports, admin status update
-│       ├── reports/
-│       │   ├── data.js             # 3 fraud reports with ID generator
-│       │   └── routes.js           # Get all reports (fraud + spoilage), create report, update status
-│       ├── stats/
-│       │   ├── data.js             # Platform stats, team members, admin stats
-│       │   └── routes.js           # Public stats/team, admin stats
-│       ├── users/
-│       │   └── routes.js           # Admin user management: list, get by ID, update status/verification
-│       └── settings/
-│           └── routes.js           # Admin platform settings: get/update (in-memory storage)
-│
-└── frontend/                       # React + Vite SPA
-    ├── package.json                # Frontend dependencies & scripts
-    ├── index.html                  # Vite HTML entry point
-    ├── vite.config.js              # Vite config with React plugin
-    ├── eslint.config.js            # ESLint config
-    └── src/
-        ├── main.jsx                # App entry — BrowserRouter + AuthProvider wrapper
-        ├── App.jsx                 # Route definitions — 30 routes with ProtectedRoute/GuestRoute guards
-        ├── App.css                 # Global app styles
-        ├── theme.css               # CSS variables, design tokens, global theme
-        │
-        ├── api/                    # Axios API layer — each file maps to a backend microservice
-        │   ├── client.js           # Axios instance with baseURL, token interceptor, 401 handler
-        │   ├── auth.js             # login, register, getProfile, updateProfile, changePassword
-        │   ├── crops.js            # getAll, getById, getCategories, getFarmers, create, update, remove
-        │   ├── orders.js           # getFarmerOrders, getBuyerOrders, getAllOrders, placeOrder, updateStatus
-        │   ├── cart.js             # get, addItem, updateItem, removeItem, clear
-        │   ├── wishlist.js         # get, add, remove
-        │   ├── chat.js             # getContacts, getMessages, sendMessage
-        │   ├── analytics.js        # getFarmerAnalytics, getBuyerAnalytics, getEarnings, getAdminAnalytics
-        │   ├── spoilage.js         # getAll, create, updateStatus
-        │   ├── reports.js          # getAll, create, updateStatus
-        │   ├── stats.js            # getPlatformStats, getTeam, getAdminStats
-        │   ├── users.js            # getAll, getById, updateStatus
-        │   └── settings.js         # get, update
-        │
-        ├── utils/
-        │   ├── AuthContext.jsx     # React Context for auth state — login, logout, register, updateUser
-        │   └── mockData.js         # Legacy mock data file (no longer imported by active pages)
-        │
-        ├── layouts/
-        │   ├── PublicLayout.jsx    # Layout for public pages (Navbar + Footer)
-        │   ├── DashboardLayout.jsx # Layout for authenticated pages (Sidebar + content area)
-        │   └── DashboardLayout.css # Dashboard layout styles
-        │
-        ├── components/
-        │   ├── Navbar/
-        │   │   ├── Navbar.jsx      # Top navigation bar for public pages
-        │   │   └── Navbar.css
-        │   ├── Footer/
-        │   │   ├── Footer.jsx      # Footer for public pages
-        │   │   └── Footer.css
-        │   ├── Sidebar/
-        │   │   ├── Sidebar.jsx     # Dashboard sidebar with role-based navigation
-        │   │   └── Sidebar.css
-        │   ├── CropCard/
-        │   │   ├── CropCard.jsx    # Reusable crop display card
-        │   │   └── CropCard.css
-        │   ├── StatsCard/
-        │   │   ├── StatsCard.jsx   # Reusable statistics display card
-        │   │   └── StatsCard.css
-        │   ├── Chat/
-        │   │   ├── Chat.jsx        # Full chat component — contacts list + message window
-        │   │   └── Chat.css
-        │   ├── categories.jsx      # Category filter component
-        │   ├── categories.css
-        │   ├── navigation.jsx      # Legacy navigation component
-        │   ├── navigation.css
-        │   ├── search-bar.jsx      # Search bar component
-        │   └── searchbar.css
-        │
-        └── pages/
-            ├── public/                     # Public-facing pages (no auth required)
-            │   ├── Home.jsx / Home.css     # Landing page — hero, stats, featured crops, testimonials
-            │   ├── Marketplace.jsx / .css  # Browse/filter/search all crop listings
-            │   ├── About.jsx / About.css   # About page — mission, values, impact, team
-            │   ├── HowItWorks.jsx / .css   # How the platform works (static)
-            │   └── Contact.jsx / .css      # Contact form page (static)
-            │
-            ├── auth/                       # Authentication pages
-            │   ├── Login.jsx               # Login form with email/password
-            │   ├── Register.jsx            # Multi-step registration form
-            │   ├── ForgotPassword.jsx      # Password reset page (static/placeholder)
-            │   └── Auth.css                # Shared auth page styles
-            │
-            ├── farmer/                     # Farmer dashboard pages (role: farmer)
-            │   ├── FarmerDashboard.jsx/.css # Dashboard overview — stats, recent orders, revenue chart
-            │   ├── AddCrop.jsx / .css      # Form to add new crop listing
-            │   ├── MyListings.jsx          # Manage farmer's crop listings (toggle availability, delete)
-            │   ├── FarmerOrders.jsx        # View/manage received orders, update status
-            │   ├── Spoilage.jsx            # Report crop spoilage/loss
-            │   ├── Earnings.jsx            # Earnings overview with transaction history
-            │   ├── FarmerAnalytics.jsx     # Revenue charts, top crops, engagement metrics
-            │   ├── FarmerChat.jsx          # Chat interface (wraps Chat component)
-            │   └── FarmerSettings.jsx      # Profile settings and password change
-            │
-            ├── buyer/                      # Buyer dashboard pages (role: buyer)
-            │   ├── BuyerDashboard.jsx      # Dashboard — order stats, recent orders, recommendations
-            │   ├── Cart.jsx                # Shopping cart with checkout flow
-            │   ├── BuyerOrders.jsx         # Order history with status tracking
-            │   ├── Wishlist.jsx            # Saved/wishlisted crops
-            │   ├── BuyerAnalytics.jsx      # Purchase analytics and spending trends
-            │   ├── BuyerChat.jsx           # Chat interface (wraps Chat component)
-            │   └── BuyerSettings.jsx       # Profile settings
-            │
-            ├── admin/                      # Admin dashboard pages (role: admin)
-            │   ├── AdminDashboard.jsx      # Platform overview — user/order/revenue stats
-            │   ├── UsersManagement.jsx     # Manage all users — verify, block, search, filter by role
-            │   ├── AdminCrops.jsx          # Review and approve/reject crop listings
-            │   ├── AdminOrders.jsx         # Monitor all platform orders
-            │   ├── Reports.jsx             # Fraud reports and spoilage claims management
-            │   └── AdminSettings.jsx       # Platform settings — general, fees, security, maintenance
-            │
-            └── (legacy pages)              # Older pages from initial build (not actively routed)
-                ├── home.jsx / home.css
-                ├── login.jsx / login.css
-                ├── sign-up.jsx / sign-up.css
-                ├── forget-password.jsx / .css
-                ├── cart.jsx
-                ├── orders.jsx
-                ├── porducts.jsx
-                └── product-detail.jsx
-```
+**AgriChain** is a full-stack agricultural marketplace platform that connects Indian farmers directly with buyers, eliminating middlemen. The platform provides role-based dashboards for four user types -- Farmers, Buyers, Both (dual-role), and Admins -- with features including crop listing, ordering, analytics, fraud reporting, and platform administration.
+
+All data is persisted in a PostgreSQL database hosted on Supabase with Row-Level Security (RLS) policies. Authentication is handled via Supabase Auth (GoTrue) with JWT tokens.
 
 ---
 
-## 3. Tech Stack
+## 2. Tech Stack
 
 ### Frontend
-| Technology | Version | Purpose |
-|---|---|---|
-| React | 19.2.0 | UI library |
-| React Router DOM | 7.13.1 | Client-side routing |
-| Vite | 7.3.1 | Build tool & dev server |
-| Axios | 1.15.0 | HTTP client for API calls |
-| React Icons | 5.6.0 | Icon library |
-| FontAwesome (React) | 3.2.0 | Additional icons |
-| Headless UI | 2.2.10 | Accessible UI primitives |
-| react-phone-number-input | 3.4.16 | Phone number input with country codes |
+| Technology | Purpose |
+|---|---|
+| React 19 | UI library |
+| React Router DOM v7 | Client-side routing with role-based guards |
+| Vite | Build tool and dev server |
+| Axios | HTTP client with token interceptors |
+| Supabase JS Client | Auth session management on frontend |
 
 ### Backend
-| Technology | Version | Purpose |
-|---|---|---|
-| Node.js | (user's installed version) | Runtime |
-| Express | 4.x | HTTP server framework |
-| bcryptjs | 3.0.3 | Password hashing (pure JS) |
-| jsonwebtoken | 9.0.3 | JWT token generation/verification |
-| cors | 2.8.6 | Cross-origin resource sharing |
-| dotenv | 17.4.1 | Environment variable loading |
-
-### Database
-| Technology | Status |
+| Technology | Purpose |
 |---|---|
-| In-memory JavaScript objects | **Currently active** — all data stored in `data.js` files per service |
-| PostgreSQL / MongoDB | **Placeholder** — `config/db.js` exists with config but no connection logic |
+| Node.js | Runtime |
+| Express | HTTP server framework |
+| Supabase JS Client | Database queries via PostgREST + Auth verification |
+| dotenv | Environment variable loading |
+| cors | Cross-origin resource sharing |
+
+### Database & Auth
+| Technology | Purpose |
+|---|---|
+| PostgreSQL (Supabase) | Relational database with RLS |
+| Supabase Auth (GoTrue) | User authentication, JWT tokens, session management |
 
 ### Architecture
-- **Pattern:** Microservice-style modular backend (12 service modules)
-- **Auth:** JWT Bearer tokens with role-based access control (farmer, buyer, admin)
+- **Pattern:** Microservice-style modular backend (9 service modules)
+- **Auth:** JWT Bearer tokens via Supabase Auth with role-based access control
 - **State:** React Context (AuthContext) for client-side auth state
-- **Storage:** localStorage for JWT token and user profile persistence
+- **Storage:** localStorage for JWT token persistence
 - **Module System:** ES Modules (`"type": "module"`) in both frontend and backend
+- **Database Access:** Supabase PostgREST with explicit FK hints for joins
 
 ---
 
-## 4. Features
+## 3. Database Schema (for ER Diagram)
 
-### Built (Fully Functional)
+### 3.1 Tables
 
-#### Public Features
-- [x] Landing page with platform stats, featured crops, testimonials
-- [x] Marketplace — browse, search, filter, sort crops
-- [x] About page — mission, vision, values, team (dynamic from API)
-- [x] How It Works page
-- [x] Contact page
-- [x] 404 page
+#### PROFILES
+Stores user profile data. Linked to Supabase `auth.users` via shared UUID.
 
-#### Authentication
-- [x] Login with email/password (demo mode: accepts any password)
-- [x] Registration with multi-step form
-- [x] JWT token-based auth with 7-day expiry
-- [x] Auto-redirect based on role after login
-- [x] Protected routes with role guards
-- [x] Guest routes (redirect authenticated users away from login/register)
-- [x] 401 interceptor — auto-logout on expired tokens
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| id | UUID | PK, FK -> auth.users | User ID (matches auth user) |
+| full_name | TEXT | nullable | Full name |
+| email | TEXT | nullable | Email address |
+| phone_no | TEXT | nullable | Phone number |
+| address | TEXT | nullable | Location/address |
+| role | ENUM | NOT NULL | `Farmer`, `Buyer`, `Both`, `Admin` |
+| dob | DATE | nullable | Date of birth |
+| verified | BOOLEAN | DEFAULT false | Admin-verified status |
+| blocked | BOOLEAN | DEFAULT false | Admin-blocked status |
+| created_at | TIMESTAMPTZ | DEFAULT now() | Account creation time |
+| updated_at | TIMESTAMPTZ | DEFAULT now() | Last profile update |
 
-#### Farmer Features
-- [x] Dashboard with stats overview (earnings, orders, crops, rating)
-- [x] Add new crop listing
-- [x] Manage listings — toggle availability, delete
-- [x] View/manage orders — update status (Pending > Processing > Shipped > Delivered)
-- [x] Report crop spoilage/loss
-- [x] View earnings with transaction history
-- [x] Analytics — monthly revenue, top crops, engagement
-- [x] Chat with buyers
-- [x] Profile settings and password change
+#### CROP_VARIETY
+Master list of crop varieties. Seeded with 60 entries.
 
-#### Buyer Features
-- [x] Dashboard with order stats and recommendations
-- [x] Shopping cart — add, update quantity, remove, checkout
-- [x] Order history with status tracking
-- [x] Wishlist — save/remove crops
-- [x] Purchase analytics
-- [x] Chat with farmers
-- [x] Profile settings
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Variety ID |
+| category | ENUM | NOT NULL | `fruits`, `vegetables`, `grains`, `nuts`, `spices`, `processed` |
+| sub_category | TEXT | NOT NULL | Sub-category (e.g., Cereals, Citrus) |
+| variety | TEXT | NOT NULL | Variety name (e.g., Basmati Rice) |
+| created_at | TIMESTAMP | DEFAULT now() | Creation time |
 
-#### Admin Features
-- [x] Dashboard — platform-wide stats (users, crops, orders, revenue)
-- [x] User management — list, search, filter by role, verify/block users
-- [x] Crop management — review and approve/reject listings
-- [x] Order monitoring — view all platform orders, filter by status
-- [x] Reports — fraud reports and spoilage claims, resolve reports
-- [x] Platform settings — general, fees, security toggles, maintenance actions
+#### PRODUCTS
+Crop listings created by farmers.
 
-### In Progress / Pending
-- [ ] **Real database integration** — currently all data is in-memory and resets on server restart
-- [ ] **Forgot password flow** — page exists but no backend logic (no email service)
-- [ ] **File uploads** — crop images are hardcoded Unsplash URLs, no actual upload
-- [ ] **Real-time chat** — currently HTTP polling, no WebSocket/SSE
-- [ ] **Payment integration** — checkout flow exists but no actual payment gateway (Razorpay/PayU/PhonePe placeholders in settings)
-- [ ] **Crop detail page** — individual crop view page not routed (legacy `product-detail.jsx` exists)
-- [ ] **Search from Navbar** — search bar component exists but not wired to marketplace filters
-- [ ] **Maintenance mode** — toggle exists in admin settings but no middleware to enforce it
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Product ID |
+| farmer_id | UUID | FK -> profiles.id (constraint: fk_farmer) | Farmer who listed it |
+| category | UUID | FK -> crop_variety.id | Crop variety reference |
+| quantity | FLOAT8 | CHECK >= 0 | Available quantity |
+| unit | TEXT | | Unit of measure (e.g., kg) |
+| price_per_unit | NUMERIC | | Price per unit in INR |
+| harvest_date | DATE | nullable | Harvest date |
+| description | TEXT | nullable | Product description |
+| image_url | TEXT | nullable | Product image URL |
+| status | TEXT | DEFAULT 'available' | `available` or `unavailable` |
+| featured | BOOLEAN | DEFAULT false | Show in landing page "Live Market Prices" |
+| created_at | TIMESTAMPTZ | DEFAULT now() | Creation time |
+| updated_at | TIMESTAMPTZ | DEFAULT now() | Last update time |
+
+#### ORDERS
+Purchase orders from buyers to farmers.
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Order ID |
+| farmer_id | UUID | FK -> profiles.id (constraint: fk_farmer) | Farmer receiving order |
+| customer_id | UUID | FK -> profiles.id (constraint: fk_customers) | Buyer placing order |
+| product_id | UUID | FK -> products.id (constraint: fk_products) | Product being ordered |
+| quantity | INT4 | CHECK > 0 | Quantity ordered |
+| price | NUMERIC | CHECK >= 0 | Total order price (computed) |
+| status | ENUM | DEFAULT 'requested' | `requested`, `ongoing`, `accepted`, `rejected` |
+| order_date | TIMESTAMP | DEFAULT now() | Order placement date |
+| created_at | TIMESTAMP | DEFAULT now() | Creation time |
+| updated_at | TIMESTAMP | nullable | Last update time |
+
+#### FRAUD_REPORTS
+User-submitted reports against other users.
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| id | UUID | PK, DEFAULT gen_random_uuid() | Report ID |
+| reporter_id | UUID | FK -> profiles.id (constraint: fk_reporter) | User who filed report |
+| reported_user_id | UUID | FK -> profiles.id (constraint: fk_reported_user) | User being reported |
+| type | TEXT | NOT NULL | `fraud`, `quality`, `payment`, `delivery` |
+| description | TEXT | NOT NULL | Detailed description |
+| severity | TEXT | DEFAULT 'medium', CHECK | `low`, `medium`, `high`, `critical` |
+| status | TEXT | DEFAULT 'pending', CHECK | `pending`, `investigating`, `resolved`, `dismissed` |
+| admin_notes | TEXT | nullable | Admin's notes on the report |
+| created_at | TIMESTAMP | DEFAULT now() | Creation time |
+| updated_at | TIMESTAMP | nullable | Last update time |
+
+### 3.2 Entity Relationships (for ER Diagram)
+
+```
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│  CROP_VARIETY │       │   PROFILES   │       │FRAUD_REPORTS │
+│──────────────│       │──────────────│       │──────────────│
+│ id (PK)      │◄──┐   │ id (PK)      │◄──┬──│ reporter_id  │
+│ category     │   │   │ full_name    │   │  │ reported_    │
+│ sub_category │   │   │ email        │   │  │  user_id     │
+│ variety      │   │   │ role         │   │  │ type         │
+│ created_at   │   │   │ verified     │   │  │ severity     │
+└──────────────┘   │   │ blocked      │   │  │ status       │
+                   │   └──────┬───────┘   │  └──────────────┘
+                   │          │           │
+                   │   ┌──────┴───────┐   │
+                   │   │   PRODUCTS   │   │
+                   │   │──────────────│   │
+                   └───│ category(FK) │   │
+                       │ farmer_id   │───┘
+                       │ quantity     │
+                       │ price_per_   │
+                       │  unit        │
+                       │ status       │
+                       │ featured     │
+                       └──────┬───────┘
+                              │
+                       ┌──────┴───────┐
+                       │    ORDERS    │
+                       │──────────────│
+                       │ product_id   │──► PRODUCTS
+                       │ farmer_id    │──► PROFILES
+                       │ customer_id  │──► PROFILES
+                       │ quantity     │
+                       │ price        │
+                       │ status       │
+                       └──────────────┘
+```
+
+**Relationships Summary:**
+- **profiles (1) <---> (N) products** via `farmer_id` -- A farmer lists many products
+- **crop_variety (1) <---> (N) products** via `category` -- Each product belongs to one variety
+- **profiles (1) <---> (N) orders** via `farmer_id` -- A farmer receives many orders
+- **profiles (1) <---> (N) orders** via `customer_id` -- A buyer places many orders
+- **products (1) <---> (N) orders** via `product_id` -- A product can have many orders
+- **profiles (1) <---> (N) fraud_reports** via `reporter_id` -- A user files many reports
+- **profiles (1) <---> (N) fraud_reports** via `reported_user_id` -- A user can be reported many times
+
+**Cardinalities:**
+- profiles : products = 1 : N
+- crop_variety : products = 1 : N
+- profiles : orders = 1 : N (both as farmer and as customer)
+- products : orders = 1 : N
+- profiles : fraud_reports = 1 : N (both as reporter and reported)
+
+### 3.3 Foreign Key Constraint Names
+These are the actual PostgreSQL constraint names used in Supabase PostgREST joins:
+
+| Constraint Name | Table | Column | References |
+|---|---|---|---|
+| fk_farmer | products | farmer_id | profiles.id |
+| fk_farmer | orders | farmer_id | profiles.id |
+| fk_customers | orders | customer_id | profiles.id |
+| fk_products | orders | product_id | products.id |
+| fk_reporter | fraud_reports | reporter_id | profiles.id |
+| fk_reported_user | fraud_reports | reported_user_id | profiles.id |
+
+### 3.4 Row-Level Security (RLS) Policies
+
+#### PROFILES (RLS Enabled)
+| Policy | Command | Rule |
+|---|---|---|
+| Anyone can view profiles | SELECT | true |
+| Users can view own profile | SELECT | auth.uid() = id |
+| Users can insert own profile | INSERT | auth.uid() = id |
+| Users can update own profile | UPDATE | auth.uid() = id |
+| Admins can update any profile | UPDATE | EXISTS(profile where id=auth.uid() AND role='Admin') |
+
+#### PRODUCTS (RLS Enabled)
+| Policy | Command | Rule |
+|---|---|---|
+| Public view products | SELECT | true |
+| Farmers manage own products | ALL | role IN ('Farmer', 'Both') |
+| Admin manage all products | ALL | role = 'Admin' |
+
+#### ORDERS (RLS Disabled)
+Access controlled via backend middleware (`verifyToken`, `requireRole`).
+
+#### FRAUD_REPORTS (RLS Disabled)
+Access controlled via backend middleware.
+
+### 3.5 Database Migrations Applied
+| Migration | Description |
+|---|---|
+| 20260412220520 | Add enum values (user roles, order status, crop categories) |
+| 20260412220528 | Admin products RLS policy |
+| 20260412220549 | Seed 60 crop varieties |
+| 20260417120424 | Add verified and blocked columns to profiles |
 
 ---
 
-## 5. API Endpoints
+## 4. System Architecture
+
+### 4.1 High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                   CLIENT (Browser)               │
+│  React + Vite SPA                                │
+│  ┌──────────────┐  ┌──────────────────────────┐  │
+│  │  AuthContext  │  │  Axios Client            │  │
+│  │  (JWT state)  │  │  (Bearer token attached) │  │
+│  └──────────────┘  └──────────┬───────────────┘  │
+│                               │                  │
+│  Supabase JS Client           │                  │
+│  (session sync only)          │                  │
+└───────────────────────────────┼──────────────────┘
+                                │ HTTP (REST)
+                                ▼
+┌───────────────────────────────────────────────────┐
+│              BACKEND (Express.js)                  │
+│  Port 3000                                        │
+│                                                   │
+│  ┌─────────────────────────────────────────────┐  │
+│  │           Middleware Layer                    │  │
+│  │  CORS ─► express.json() ─► verifyToken      │  │
+│  │                             ─► requireRole   │  │
+│  └─────────────────────────────────────────────┘  │
+│                                                   │
+│  ┌──────────────── Services ──────────────────┐   │
+│  │  /api/auth      │  /api/crops              │   │
+│  │  /api/orders    │  /api/users              │   │
+│  │  /api/cart      │  /api/analytics          │   │
+│  │  /api/reports   │  /api/stats              │   │
+│  │  /api/settings  │                          │   │
+│  └────────────────────────────────────────────┘   │
+│                       │                           │
+│  ┌────────────────────┴───────────────────────┐   │
+│  │  Supabase Client (PostgREST + Auth)        │   │
+│  │  - Anonymous client (public reads)          │   │
+│  │  - Auth client (RLS-protected writes)       │   │
+│  └────────────────────┬───────────────────────┘   │
+└───────────────────────┼───────────────────────────┘
+                        │ HTTPS
+                        ▼
+┌───────────────────────────────────────────────────┐
+│              SUPABASE (Cloud)                      │
+│                                                   │
+│  ┌──────────────┐  ┌──────────────────────────┐   │
+│  │  GoTrue Auth │  │  PostgreSQL Database      │   │
+│  │  (JWT issue) │  │  with RLS Policies        │   │
+│  └──────────────┘  │                           │   │
+│                    │  Tables:                   │   │
+│                    │   - profiles               │   │
+│                    │   - products               │   │
+│                    │   - crop_variety           │   │
+│                    │   - orders                 │   │
+│                    │   - fraud_reports          │   │
+│                    └───────────────────────────┘   │
+└───────────────────────────────────────────────────┘
+```
+
+### 4.2 Authentication Flow
+
+```
+REGISTRATION:
+  User ─► Frontend form ─► POST /api/auth/register
+    ─► Backend calls Supabase auth.signUp()
+    ─► Supabase creates auth.users record + returns JWT
+    ─► Backend inserts profile row in profiles table
+    ─► Returns { token, refreshToken, user } to frontend
+    ─► Frontend stores token in localStorage
+    ─► Frontend calls supabase.auth.setSession() for sync
+
+LOGIN:
+  User ─► Frontend form ─► POST /api/auth/login
+    ─► Backend calls Supabase auth.signInWithPassword()
+    ─► Backend fetches profile from profiles table
+    ─► Backend checks profile.blocked (rejects if true with 403)
+    ─► Returns { token, refreshToken, user } to frontend
+    ─► Frontend stores token, sets AuthContext state
+    ─► Role-based redirect to dashboard
+
+AUTHENTICATED REQUESTS:
+  Frontend ─► Axios interceptor attaches Bearer token
+    ─► Backend verifyToken middleware:
+       1. Extracts token from Authorization header
+       2. Validates via supabase.auth.getUser(token)
+       3. Fetches role from profiles table
+       4. Sets req.user = { id, email, role }
+       5. Sets req.supabase = authClient (for RLS queries)
+    ─► requireRole() checks req.user.role against allowed roles
+    ─► Route handler executes with authenticated context
+
+TOKEN REFRESH:
+  Supabase client auto-detects expired token
+    ─► Calls refresh_token endpoint
+    ─► Triggers onAuthStateChange('TOKEN_REFRESHED')
+    ─► Frontend updates localStorage with new token
+
+LOGOUT:
+  Frontend ─► Clears localStorage
+    ─► Calls supabase.auth.signOut()
+    ─► Clears AuthContext user state
+    ─► Redirects to home
+```
+
+### 4.3 Request-Response Flow (Example: Place Order)
+
+```
+1. Buyer clicks "Place Order" in Cart.jsx
+2. Frontend calls ordersAPI.placeOrder(items)
+       ─► POST /api/orders with { items: [{ farmerId, cropId, quantity }] }
+       ─► Authorization: Bearer <jwt_token>
+
+3. Backend middleware:
+       verifyToken() ─► validates JWT, sets req.user
+       requireRole('buyer', 'both') ─► checks role
+
+4. Route handler (orders/routes.js):
+       For each item:
+         a. Fetch product from DB ─► verify stock >= quantity
+         b. Compute price = price_per_unit * quantity
+         c. INSERT into orders table (status: 'requested')
+         d. SELECT with joins to get farmer name, crop name
+         e. formatOrder() maps DB row to frontend shape
+
+5. Response: 201 Created with array of formatted orders
+
+6. Frontend updates state, shows success message
+```
+
+---
+
+## 5. User Roles & Permissions
+
+### Role Matrix
+
+| Feature | Farmer | Buyer | Both | Admin |
+|---|:---:|:---:|:---:|:---:|
+| Browse marketplace | Yes | Yes | Yes | Yes |
+| Add crop listings | Yes | - | Yes | - |
+| Manage own crops | Yes | - | Yes | - |
+| Add to cart | - | Yes | Yes | - |
+| Place orders | - | Yes | Yes | - |
+| View received orders | Yes | - | Yes | - |
+| Accept/reject orders | Yes | - | Yes | - |
+| View purchase orders | - | Yes | Yes | - |
+| View earnings | Yes | - | Yes | - |
+| View farmer analytics | Yes | - | Yes | - |
+| Report other users | Yes | Yes | Yes | - |
+| Manage all users | - | - | - | Yes |
+| Verify/block users | - | - | - | Yes |
+| Manage all crops | - | - | - | Yes |
+| Toggle featured crops | - | - | - | Yes |
+| View all orders | - | - | - | Yes |
+| Manage fraud reports | - | - | - | Yes |
+| Platform settings | - | - | - | Yes |
+
+### Blocking Cascade
+When an admin blocks a farmer:
+1. `profiles.blocked` set to `true`
+2. All farmer's products set to `status = 'unavailable'`
+3. All farmer's pending/ongoing orders set to `status = 'rejected'`
+4. Farmer cannot log in (login returns 403)
+5. Farmer's products hidden from marketplace (filtered on backend)
+
+---
+
+## 6. Complete Workflow
+
+### 6.1 Farmer Workflow
+```
+Register as Farmer
+    ─► Dashboard (stats: earnings, active orders, listed crops, rating)
+    ─► Add Crop:
+        Select variety (from crop_variety master table)
+        ─► Enter quantity, unit (kg), price, description, harvest date
+        ─► POST /api/crops ─► Product listed on marketplace
+    ─► My Listings:
+        View all own crops ─► Toggle availability ─► Edit price/quantity ─► Delete
+    ─► Orders Received:
+        View incoming orders (status: Requested)
+        ─► Review (sets status: Ongoing)
+        ─► Accept (sets status: Accepted, deducts product stock)
+        ─► Reject (sets status: Rejected)
+        ─► Report buyer (fraud/quality/payment/delivery report)
+    ─► Earnings:
+        Total earnings (sum of accepted orders)
+        ─► Transaction list (credit per order - 2% platform fee)
+        ─► Monthly revenue chart
+    ─► Analytics:
+        Monthly revenue trend ─► Top performing crops ─► Conversion rate
+    ─► Settings:
+        Update profile (name, phone, address) ─► Change password
+```
+
+### 6.2 Buyer Workflow
+```
+Register as Buyer
+    ─► Dashboard (order stats, recent orders)
+    ─► Marketplace:
+        Browse crops ─► Search by name/farmer/location
+        ─► Filter by category, price range, availability
+        ─► Sort by price, newest, rating
+        ─► View crop detail page
+    ─► Add to Cart:
+        Select quantity ─► Add to cart (in-memory on backend)
+        ─► Modify quantity ─► Remove items
+    ─► Checkout:
+        Review cart items ─► Place order
+        ─► POST /api/orders (creates one order per item)
+        ─► Each order starts with status: 'requested'
+    ─► My Orders:
+        View all purchase orders ─► Filter by status
+        ─► Track order progress (Requested -> Ongoing -> Accepted/Rejected)
+        ─► Report farmer (fraud/quality/payment/delivery report)
+    ─► Settings:
+        Update profile ─► Change password
+```
+
+### 6.3 Admin Workflow
+```
+Login as Admin
+    ─► Dashboard:
+        KPIs: total users, crops, orders, revenue
+        ─► Pending approvals (unverified users)
+        ─► Flagged reports (pending/investigating)
+    ─► User Management:
+        View all users ─► Filter by role ─► Search by name/email
+        ─► Verify user (sets verified = true)
+        ─► Block user (sets blocked = true, cascading effects)
+        ─► Unblock user
+    ─► Crop Management:
+        View all crops ─► Approve/reject listings
+    ─► Market Prices:
+        View all crops ─► Toggle "featured" flag
+        ─► Featured crops appear in "Live Market Prices" on landing page
+        ─► Live preview of landing page hero card
+    ─► Order Management:
+        View all platform orders ─► Filter by status
+    ─► Reports:
+        View fraud reports ─► Filter by status
+        ─► Update status: pending -> investigating -> resolved/dismissed
+        ─► Add admin notes
+    ─► Settings:
+        Platform name, support contact
+        ─► Fee configuration (platform fee %, min order, max trade)
+        ─► Security toggles (KYC, GST, 2FA, email verification)
+        ─► Maintenance mode toggle
+```
+
+### 6.4 Order Lifecycle
+```
+                  ┌─────────────┐
+                  │  REQUESTED  │  (Buyer places order)
+                  └──────┬──────┘
+                         │
+              ┌──────────┼──────────┐
+              ▼                     ▼
+       ┌──────────┐          ┌──────────┐
+       │ ONGOING  │          │ REJECTED │  (Farmer declines)
+       │ (Review) │          └──────────┘
+       └────┬─────┘
+            │
+     ┌──────┼──────┐
+     ▼             ▼
+┌──────────┐ ┌──────────┐
+│ ACCEPTED │ │ REJECTED │
+│(Stock    │ └──────────┘
+│ deducted)│
+└──────────┘
+```
+
+### 6.5 Fraud Reporting Flow
+```
+User (Farmer/Buyer) reports another user
+    ─► Select type: fraud | quality | payment | delivery
+    ─► Select severity: low | medium | high | critical
+    ─► Write description
+    ─► POST /api/reports
+
+Admin reviews report
+    ─► Status: pending -> investigating -> resolved/dismissed
+    ─► Add admin notes
+    ─► May choose to block the reported user
+```
+
+---
+
+## 7. API Endpoints
 
 **Base URL:** `http://localhost:3000/api`
 
-### Auth Service (`/api/auth`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| POST | `/auth/login` | No | Login | `{ email, password, role? }` | `{ token, user }` |
-| POST | `/auth/register` | No | Register new user | `{ name, email, password, role, phone?, location? }` | `{ token, user }` |
-| GET | `/auth/me` | Bearer | Get current user profile | — | `{ id, name, email, role, avatar, location, phone, verified, joined, bio }` |
-| PUT | `/auth/profile` | Bearer | Update profile | `{ name?, phone?, location?, bio?, avatar? }` | Updated user object |
-| PUT | `/auth/password` | Bearer | Change password | `{ currentPassword, newPassword }` | `{ message }` |
+### Auth Service (`/api/auth`) -- 5 endpoints
+| Method | Path | Auth | Description |
+|---|---|:---:|---|
+| POST | /auth/register | No | Register new user (creates auth + profile) |
+| POST | /auth/login | No | Login (returns JWT + profile, blocks if user.blocked) |
+| GET | /auth/me | Yes | Get current user's profile |
+| PUT | /auth/profile | Yes | Update profile fields |
+| PUT | /auth/password | Yes | Change password (verifies current first) |
 
-### Crops Service (`/api/crops`)
-| Method | Endpoint | Auth | Description | Request / Params | Response |
-|---|---|---|---|---|---|
-| GET | `/crops` | No | List crops (with filters) | Query: `search, category, organic, available, minPrice, maxPrice, sortBy, farmerId` | `[{ id, name, category, price, unit, quantity, farmer, location, image, rating, reviews, available, organic, description, approvalStatus, views, enquiries }]` |
-| GET | `/crops/categories` | No | List categories | — | `[{ id, label, icon }]` |
-| GET | `/crops/farmers` | No | List farmers | — | `[{ id, name, location, crops, rating, image, verified, yearsActive }]` |
-| GET | `/crops/:id` | No | Get crop by ID | — | Crop object |
-| POST | `/crops` | Farmer | Create crop listing | `{ name, category, variety?, quantity, unit?, price, minOrder?, description?, state?, city?, harvestDate?, organic?, available? }` | Created crop object |
-| PUT | `/crops/:id` | Bearer | Update crop | `{ name?, category?, price?, unit?, quantity?, description?, organic?, available?, approvalStatus? (admin) }` | Updated crop object |
-| DELETE | `/crops/:id` | Bearer | Delete crop | — | `{ message }` |
+### Crops Service (`/api/crops`) -- 11 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /crops/featured | No | - | Featured crops for landing page hero |
+| GET | /crops | No | - | All crops with filters (excludes blocked farmers) |
+| GET | /crops/categories | No | - | Crop category list |
+| GET | /crops/farmers | No | - | List of all farmers |
+| GET | /crops/varieties | No | - | Grouped varieties by category |
+| GET | /crops/all | Yes | Admin | All crops with featured flag |
+| GET | /crops/:id | No | - | Single crop detail |
+| POST | /crops | Yes | Farmer, Both | Add new crop listing |
+| PUT | /crops/:id | Yes | Owner/Admin | Update crop |
+| PUT | /crops/:id/featured | Yes | Admin | Toggle featured flag |
+| DELETE | /crops/:id | Yes | Owner/Admin | Delete crop |
 
-### Orders Service (`/api/orders`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/orders/farmer` | Farmer | Get farmer's orders | Query: `status?` | `[{ id, farmerId, buyerId, buyer, crop, quantity, amount, status, date }]` |
-| GET | `/orders/buyer` | Buyer | Get buyer's orders | Query: `status?` | `[{ id, buyerId, farmerId, farmer, crop, quantity, amount, status, date, tracking }]` |
-| GET | `/orders/all` | Admin | Get all platform orders | Query: `status?` | `[{ ...order, type }]` |
-| POST | `/orders` | Buyer | Place order | `{ items: [{ farmerId?, farmer?, cropName, quantity, amount }], paymentMethod? }` | `[created orders]` |
-| PUT | `/orders/:id/status` | Bearer | Update order status | `{ status }` | Updated order object |
+### Orders Service (`/api/orders`) -- 5 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /orders/farmer | Yes | Farmer, Both | Farmer's received orders |
+| GET | /orders/buyer | Yes | Buyer, Both | Buyer's purchase orders |
+| GET | /orders/all | Yes | Admin | All platform orders |
+| POST | /orders | Yes | Buyer, Both | Place order (validates stock, computes price) |
+| PUT | /orders/:id/status | Yes | Owner Farmer/Admin | Update status (deducts stock on accept) |
 
-### Cart Service (`/api/cart`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/cart` | Buyer | Get cart items | — | `[{ id, cropId, quantity, crop: {...} }]` |
-| POST | `/cart` | Buyer | Add item to cart | `{ cropId, quantity? }` | Cart item with crop data |
-| PUT | `/cart/:id` | Buyer | Update cart item quantity | `{ quantity }` | Updated cart item |
-| DELETE | `/cart/:id` | Buyer | Remove item from cart | — | `{ message }` |
-| DELETE | `/cart` | Buyer | Clear entire cart | — | `{ message }` |
+### Users Service (`/api/users`) -- 3 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /users | Yes | Admin | List all users (filter by role, search) |
+| GET | /users/:id | Yes | Admin | Get user details |
+| PUT | /users/:id/status | Yes | Admin | Verify/block user (cascading effects) |
 
-### Wishlist Service (`/api/wishlist`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/wishlist` | Buyer | Get wishlist crops | — | `[crop objects]` |
-| POST | `/wishlist` | Buyer | Add crop to wishlist | `{ cropId }` | `{ message }` |
-| DELETE | `/wishlist/:cropId` | Buyer | Remove from wishlist | — | `{ message }` |
+### Cart Service (`/api/cart`) -- 5 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /cart | Yes | Buyer, Both | Get cart items (enriched with crop data) |
+| POST | /cart | Yes | Buyer, Both | Add item to cart |
+| PUT | /cart/:id | Yes | Buyer, Both | Update item quantity |
+| DELETE | /cart/:id | Yes | Buyer, Both | Remove item |
+| DELETE | /cart | Yes | Buyer, Both | Clear cart |
 
-### Chat Service (`/api/chat`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/chat/contacts` | Bearer | Get chat contacts | — | `[{ id, userId, name, role, avatar, online, lastMsg, time, unread }]` |
-| GET | `/chat/messages/:contactUserId` | Bearer | Get messages with contact | — | `[{ id, from, text, time }]` |
-| POST | `/chat/messages/:contactUserId` | Bearer | Send message | `{ text }` | `{ id, from, text, time }` |
+### Analytics Service (`/api/analytics`) -- 3 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /analytics/farmer | Yes | Farmer, Both | Farmer analytics (revenue, top crops, conversion) |
+| GET | /analytics/earnings | Yes | Farmer, Both | Earnings with transaction breakdown |
+| GET | /analytics/admin | Yes | Admin | Platform-wide analytics |
 
-### Analytics Service (`/api/analytics`)
-| Method | Endpoint | Auth | Description | Response |
-|---|---|---|---|---|
-| GET | `/analytics/farmer` | Bearer | Farmer analytics | `{ stats, monthlyRevenue, months, topCrops, weeklyEngagement }` |
-| GET | `/analytics/buyer` | Bearer | Buyer analytics | `{ stats, monthlyRevenue, months }` |
-| GET | `/analytics/earnings` | Bearer | Earnings + transactions | `{ transactions, totalEarnings, totalFees, netEarnings, monthlyRevenue, months }` |
-| GET | `/analytics/admin` | Bearer | Admin analytics | `{ monthlyRevenue, months, topCrops }` |
+### Reports Service (`/api/reports`) -- 3 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /reports | Yes | Any | Fraud reports (admin=all, user=own) |
+| POST | /reports | Yes | Any | Submit fraud report |
+| PUT | /reports/:id/status | Yes | Admin | Update report status + admin notes |
 
-### Spoilage Service (`/api/spoilage`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/spoilage` | Bearer | Get spoilage reports (farmer sees own, admin sees all) | — | `[{ id, farmerId, crop, quantity, reason, date, status, value, description }]` |
-| POST | `/spoilage` | Farmer | Report spoilage | `{ crop, quantity, reason, date, description? }` | Created report |
-| PUT | `/spoilage/:id/status` | Admin | Update report status | `{ status }` | Updated report |
+### Stats Service (`/api/stats`) -- 3 endpoints
+| Method | Path | Auth | Description |
+|---|---|:---:|---|
+| GET | /stats/platform | No | Platform stats (farmer count, crop count, etc.) |
+| GET | /stats/team | No | Team members (hardcoded) |
+| GET | /stats/admin | Yes (Admin) | Admin dashboard KPIs |
 
-### Reports Service (`/api/reports`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/reports` | Admin | Get all fraud + spoilage reports | — | `{ fraudReports, spoilageReports }` |
-| POST | `/reports` | Bearer | Submit fraud report | `{ type, reported, description, severity? }` | Created report |
-| PUT | `/reports/:id/status` | Admin | Update report status | `{ status }` | Updated report |
+### Settings Service (`/api/settings`) -- 2 endpoints
+| Method | Path | Auth | Roles | Description |
+|---|---|:---:|---|---|
+| GET | /settings | Yes | Admin | Get platform settings |
+| PUT | /settings | Yes | Admin | Update platform settings |
 
-### Stats Service (`/api/stats`)
-| Method | Endpoint | Auth | Description | Response |
-|---|---|---|---|---|
-| GET | `/stats/platform` | No | Public platform stats | `[{ label, value, icon }]` |
-| GET | `/stats/testimonials` | No | Public testimonials | `[{ id, name, role, text, avatar, rating }]` |
-| GET | `/stats/team` | No | Public team members | `[{ name, role, bio, avatar }]` |
-| GET | `/stats/admin` | Bearer | Admin dashboard stats | `{ totalUsers, totalCrops, totalOrders, totalRevenue, pendingApprovals, flaggedReports, activeDisputes }` |
-
-### Users Service (`/api/users`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/users` | Admin | List users | Query: `role?, search?` | `[user objects (no password)]` |
-| GET | `/users/:id` | Admin | Get user by ID | — | User object (no password) |
-| PUT | `/users/:id/status` | Admin | Update user status | `{ verified?, status? }` | Updated user |
-
-### Settings Service (`/api/settings`)
-| Method | Endpoint | Auth | Description | Request Body | Response |
-|---|---|---|---|---|---|
-| GET | `/settings` | Admin | Get platform settings | — | Settings object |
-| PUT | `/settings` | Admin | Update platform settings | Partial settings object | Updated settings |
-
-**Total: 48 endpoints across 12 microservices**
+**Total: 40 endpoints across 9 microservices**
 
 ---
 
-## 6. Environment Variables
+## 8. Frontend Pages & Routing
+
+### Public Pages (no auth)
+| Path | Component | Description |
+|---|---|---|
+| / | Home | Landing page with hero, live market prices, featured crops, stats, testimonials |
+| /marketplace | Marketplace | Browse/search/filter all crop listings |
+| /marketplace/:id | CropDetail | Individual crop detail with add-to-cart |
+| /how-it-works | HowItWorks | Platform guide |
+| /about | About | Mission, values, team |
+| /contact | Contact | Contact form |
+
+### Auth Pages (guest only)
+| Path | Component | Description |
+|---|---|---|
+| /login | Login | Email/password login |
+| /register | Register | Multi-step registration |
+
+### Farmer Pages (role: farmer)
+| Path | Component | Description |
+|---|---|---|
+| /farmer/dashboard | FarmerDashboard | Stats, revenue chart, recent orders, quick actions |
+| /farmer/crops | MyListings | Manage own crop listings |
+| /farmer/add-crop | AddCrop | Add new crop form |
+| /farmer/orders | FarmerOrders | View/manage received orders with status actions |
+| /farmer/earnings | Earnings | Earnings overview with transaction history |
+| /farmer/analytics | FarmerAnalytics | Revenue charts, top crops |
+| /farmer/settings | FarmerSettings | Profile and password settings |
+
+### Buyer Pages (role: buyer)
+| Path | Component | Description |
+|---|---|---|
+| /buyer/dashboard | BuyerDashboard | Order stats, recent orders |
+| /buyer/cart | Cart | Shopping cart with checkout |
+| /buyer/orders | BuyerOrders | Order history with progress tracker |
+| /buyer/settings | BuyerSettings | Profile settings |
+
+### Admin Pages (role: admin)
+| Path | Component | Description |
+|---|---|---|
+| /admin/dashboard | AdminDashboard | Platform KPIs and overview |
+| /admin/users | UsersManagement | User management (verify/block) |
+| /admin/crops | AdminCrops | Crop approval management |
+| /admin/market-prices | AdminMarketPrices | Toggle featured crops for landing page |
+| /admin/orders | AdminOrders | All platform orders |
+| /admin/reports | Reports | Fraud report management |
+| /admin/settings | AdminSettings | Platform settings |
+
+### Route Protection
+- **ProtectedRoute:** Redirects unauthenticated users to /login; wrong-role users to their dashboard
+- **GuestRoute:** Redirects authenticated users away from /login and /register
+
+---
+
+## 9. Project File Structure
+
+```
+AgriChain/
+├── PROJECT_SUMMARY.md
+│
+├── backend/
+│   ├── server.js                         # Main Express server, mounts 9 services
+│   ├── package.json
+│   ├── .env                              # SUPABASE_URL, SUPABASE_ANON_KEY, PORT, FRONTEND_URL
+│   ├── config/
+│   │   └── supabase.js                   # Supabase clients (anonymous, auth, fresh)
+│   ├── middleware/
+│   │   └── auth.js                       # verifyToken, requireRole middleware
+│   └── services/
+│       ├── auth/routes.js                # Register, login, profile, password
+│       ├── crops/routes.js               # CRUD crops, categories, varieties, featured
+│       ├── orders/routes.js              # Place/manage orders, status updates
+│       ├── users/routes.js               # Admin user management
+│       ├── cart/routes.js                # Shopping cart (in-memory)
+│       ├── analytics/routes.js           # Farmer/admin analytics computed from DB
+│       ├── reports/routes.js             # Fraud reports
+│       ├── stats/routes.js               # Platform/admin statistics
+│       └── settings/routes.js            # Platform settings (in-memory)
+│
+└── frontend/
+    ├── package.json
+    ├── vite.config.js
+    ├── index.html
+    ├── .env                              # VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_API_URL
+    └── src/
+        ├── main.jsx                      # Entry point (BrowserRouter + AuthProvider)
+        ├── App.jsx                       # Route definitions (25+ routes)
+        ├── App.css                       # Global styles
+        ├── theme.css                     # CSS variables and design tokens
+        ├── supabase/
+        │   └── supabaseClient.js         # Frontend Supabase client
+        ├── utils/
+        │   └── AuthContext.jsx           # Auth state (login, logout, register)
+        ├── api/
+        │   ├── client.js                 # Axios instance with token interceptor
+        │   ├── auth.js, crops.js, orders.js, cart.js
+        │   ├── users.js, analytics.js, reports.js
+        │   ├── stats.js, settings.js
+        │   └── (each maps to a backend service)
+        ├── layouts/
+        │   ├── PublicLayout.jsx          # Navbar + Footer
+        │   └── DashboardLayout.jsx       # Navbar + Sidebar + Content
+        ├── components/
+        │   ├── Navbar/                   # Top navigation
+        │   ├── Sidebar/                  # Role-based sidebar with dynamic badges
+        │   ├── Footer/                   # Site footer
+        │   ├── CropCard/                 # Reusable crop card
+        │   └── StatsCard/                # Reusable stats card
+        └── pages/
+            ├── public/                   # Home, Marketplace, CropDetail, About, etc.
+            ├── auth/                     # Login, Register
+            ├── farmer/                   # Dashboard, AddCrop, Orders, Earnings, etc.
+            ├── buyer/                    # Dashboard, Cart, Orders, Settings
+            └── admin/                    # Dashboard, Users, Crops, MarketPrices, etc.
+```
+
+---
+
+## 10. Environment Variables
 
 ### Backend (`backend/.env`)
 ```env
-PORT=3000                                    # Server port (default: 3000)
-FRONTEND_URL=http://localhost:5173           # CORS allowed origin (default: http://localhost:5173)
-JWT_SECRET=your-secret-key-here              # JWT signing secret (default: agrichain-secret-key-2025)
-DB_HOST=localhost                            # Database host (placeholder, not yet used)
-DB_PORT=5432                                 # Database port (placeholder, not yet used)
-DB_NAME=agrichain                            # Database name (placeholder, not yet used)
+SUPABASE_URL=https://xxxxxxxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
+PORT=3000
+FRONTEND_URL=http://localhost:5173
 ```
 
 ### Frontend (`frontend/.env`)
 ```env
-VITE_API_URL=http://localhost:3000/api       # Backend API base URL (default: http://localhost:3000/api)
+VITE_SUPABASE_URL=https://xxxxxxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
+VITE_API_URL=http://localhost:3000/api
 ```
-
-> **Note:** No `.env` files currently exist in the project. The app works with built-in defaults.
 
 ---
 
-## 7. How to Run
+## 11. How to Run
 
 ### Prerequisites
-- Node.js (v18+ recommended)
+- Node.js (v18+)
 - npm
+- Supabase project with the required tables and RLS policies
 
 ### Backend
 ```bash
@@ -412,6 +756,7 @@ cd backend
 npm install
 node server.js
 # Server runs at http://localhost:3000
+# Loads 9 microservices: auth, crops, orders, users, cart, analytics, reports, stats, settings
 ```
 
 ### Frontend
@@ -422,78 +767,27 @@ npm run dev
 # Dev server runs at http://localhost:5173
 ```
 
-### Demo Accounts
-| Role | Email | Password |
-|---|---|---|
-| Farmer | farmer@agrichain.com | password123 |
-| Buyer | buyer@agrichain.com | password123 |
-| Admin | admin@agrichain.com | password123 |
-
-> **Demo mode:** The login endpoint currently accepts any password for existing accounts.
-
 ### Build for Production
 ```bash
 cd frontend
-npm run build     # Output in frontend/dist/
-npm run preview   # Preview production build locally
+npm run build       # Output in frontend/dist/
+npm run preview     # Preview production build
 ```
 
 ---
 
-## 8. Known Issues & Bugs
+## 12. Key Design Decisions
 
-1. **Data is not persistent** — All backend data is stored in-memory (JavaScript objects). Data resets every time the server restarts. No database is connected yet.
+1. **Supabase PostgREST with explicit FK hints**: When two FKs point to the same table (e.g., orders -> profiles via farmer_id AND customer_id), PostgREST requires `!constraint_name` syntax to disambiguate joins.
 
-2. **Demo mode login bypass** — The login endpoint accepts any password (bcrypt compare failure is silently ignored). This is intentional for development but must be fixed before production.
+2. **Backend mediates all DB access**: Frontend never queries Supabase directly for data. All reads/writes go through Express endpoints, which apply business logic, role checks, and data formatting before returning to the client.
 
-3. **Legacy pages not cleaned up** — Old pages (`frontend/src/pages/home.jsx`, `login.jsx`, `sign-up.jsx`, `cart.jsx`, `orders.jsx`, `porducts.jsx`, `product-detail.jsx`, `forget-password.jsx`) are still in the codebase but not routed in `App.jsx`. They reference old imports and patterns.
+3. **Cart and Settings are in-memory**: These two services store data in Node.js memory (not DB). Cart data resets on server restart. This is acceptable for the current prototype stage.
 
-4. **Legacy `mockData.js` still exists** — `frontend/src/utils/mockData.js` is no longer imported by active pages but the file remains.
+4. **Role "Both"**: Users with role "Both" can act as both Farmer and Buyer. All `requireRole()` calls include `'both'` alongside the primary role to support this.
 
-5. **`bcrypt` (native) still in dependencies** — `package.json` still lists `bcrypt` alongside `bcryptjs`. The native `bcrypt` is unused but still installed. Can be removed with `npm uninstall bcrypt`.
+5. **Featured crops for landing page**: The admin controls which crops appear in the "Live Market Prices" hero section via a `featured` boolean on the products table. Only featured crops are shown; if none are featured, the section is hidden.
 
-6. **No input sanitization** — Backend does not sanitize or validate input beyond basic required-field checks. No protection against XSS in stored data.
+6. **Order status deducts stock**: When a farmer accepts an order (status -> 'accepted'), the ordered quantity is automatically deducted from the product's available stock. Insufficient stock prevents acceptance.
 
-7. **Crop images are static URLs** — All crop images point to Unsplash URLs. No file upload system exists.
-
-8. **Chat is not real-time** — Messages are fetched via HTTP GET. No WebSocket or polling mechanism for live updates.
-
-9. **Forgot Password is non-functional** — The page renders a form but has no backend logic or email service.
-
-10. **No pagination** — All list endpoints return full datasets. Will become a problem at scale.
-
----
-
-## 9. Current State of the Project
-
-**Stage:** Development / Prototype
-
-The application is a **fully functional prototype** with a complete frontend-to-backend integration:
-
-- **Frontend:** 30 routes across public, farmer, buyer, and admin sections. All pages fetch data dynamically from the API. Role-based routing with JWT authentication. Responsive CSS with a consistent design system.
-
-- **Backend:** 12 microservice modules exposing 48 RESTful API endpoints. JWT authentication with role-based middleware. All data is seeded in-memory from `data.js` files (migrated from former frontend mock data).
-
-- **Integration:** Axios HTTP client with automatic token injection and 401 handling. Every frontend page makes real API calls — zero static/mock data imports in active code.
-
-**What works end-to-end:**
-- User registration and login (all 3 roles)
-- Browsing/searching/filtering the marketplace
-- Farmer adding crops, managing listings, viewing orders
-- Buyer adding to cart, checking out, viewing order history
-- Admin viewing platform stats, managing users/crops/orders
-- Chat between users (non-real-time)
-- Spoilage and fraud reporting
-- Platform settings management
-
-**Next steps to production-readiness:**
-1. Connect a real database (PostgreSQL or MongoDB)
-2. Remove demo login bypass — enforce real password validation
-3. Add file upload for crop images
-4. Implement WebSocket for real-time chat
-5. Integrate payment gateway (Razorpay)
-6. Add email service for password reset
-7. Add input validation/sanitization
-8. Add pagination to list endpoints
-9. Clean up legacy files
-10. Deploy (e.g., Railway/Render for backend, Vercel/Netlify for frontend)
+7. **Blocked user cascade**: Blocking a farmer doesn't just prevent login -- it also removes their products from the marketplace and cancels their pending orders, ensuring no stale data remains visible.
