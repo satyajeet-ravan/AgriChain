@@ -89,6 +89,31 @@ router.put('/:id/status', verifyToken, requireRole('admin'), async (req, res) =>
       return res.status(400).json({ error: 'No fields to update.' });
     }
 
+    // If blocking, fetch the user's role first to handle cascading effects
+    if (updates.blocked) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', req.params.id)
+        .single();
+
+      const role = profile?.role?.toLowerCase() || '';
+      if (role === 'farmer' || role === 'both') {
+        // Set all their products to unavailable
+        await supabase
+          .from('products')
+          .update({ status: 'unavailable', updated_at: new Date().toISOString() })
+          .eq('farmer_id', req.params.id);
+
+        // Cancel all their pending/ongoing orders
+        await supabase
+          .from('orders')
+          .update({ status: 'rejected' })
+          .eq('farmer_id', req.params.id)
+          .in('status', ['requested', 'ongoing']);
+      }
+    }
+
     const { data, error } = await req.supabase
       .from('profiles')
       .update(updates)

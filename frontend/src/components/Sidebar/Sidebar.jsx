@@ -26,12 +26,13 @@ const buyerLinks = [
 ];
 
 const adminLinks = [
-  { to: '/admin/dashboard',   icon: '📊', label: 'Dashboard' },
-  { to: '/admin/users',       icon: '👥', label: 'Users', badgeKey: 'pendingUsers' },
-  { to: '/admin/crops',       icon: '🌾', label: 'Crops' },
-  { to: '/admin/orders',      icon: '📦', label: 'Orders' },
-  { to: '/admin/reports',     icon: '🚩', label: 'Reports', badgeKey: 'pendingReports' },
-  { to: '/admin/settings',    icon: '⚙️', label: 'Settings' },
+  { to: '/admin/dashboard',      icon: '📊', label: 'Dashboard' },
+  { to: '/admin/users',          icon: '👥', label: 'Users', badgeKey: 'pendingUsers' },
+  { to: '/admin/crops',          icon: '🌾', label: 'Crops' },
+  { to: '/admin/market-prices',  icon: '📈', label: 'Market Prices' },
+  { to: '/admin/orders',         icon: '📦', label: 'Orders' },
+  { to: '/admin/reports',        icon: '🚩', label: 'Reports', badgeKey: 'pendingReports' },
+  { to: '/admin/settings',       icon: '⚙️', label: 'Settings' },
 ];
 
 export default function Sidebar({ mobileOpen = false }) {

@@ -14,6 +14,7 @@ const testimonials = [
 
 function HeroCard({ crops }) {
   const live = crops.slice(0, 4);
+  if (live.length === 0) return null;
   return (
     <div className="hero-card-float">
       <div className="hcf-header">
@@ -35,13 +36,17 @@ export default function Home() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [featuredHero, setFeaturedHero] = useState([]);
+
   useEffect(() => {
     Promise.all([
       cropsAPI.getAll().catch(() => []),
       statsAPI.getPlatformStats().catch(() => []),
-    ]).then(([cropsData, statsData]) => {
+      cropsAPI.getFeatured().catch(() => []),
+    ]).then(([cropsData, statsData, featuredData]) => {
       setCrops(cropsData);
       setStats(statsData);
+      setFeaturedHero(featuredData);
     }).finally(() => setLoading(false));
   }, []);
 
@@ -76,7 +81,7 @@ export default function Home() {
               </div>
             </div>
             <div className="hero-visual">
-              <HeroCard crops={crops} />
+              <HeroCard crops={featuredHero} />
               <div className="hero-card-float" style={{ opacity: 0.85, transform: 'scale(0.96)' }}>
                 <div className="hcf-header"><span>📦 Recent Order</span><span style={{ color: '#95d5b2' }}>● Live</span></div>
                 <div className="crop-row"><div className="crop-row-name">🌾 Basmati Rice — 200kg</div><div className="crop-row-price">✓ Delivered</div></div>

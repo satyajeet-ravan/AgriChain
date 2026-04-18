@@ -42,6 +42,31 @@ function formatCrop(row) {
 // Shared select query string for product joins
 const PRODUCT_SELECT = '*, crop_variety(*), profiles(full_name, address)';
 
+// GET /api/crops/featured — public, crops marked for landing page
+router.get('/featured', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`${PRODUCT_SELECT}, featured`)
+      .eq('featured', true)
+      .eq('status', 'available')
+      .order('updated_at', { ascending: false });
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    // Filter out blocked farmers
+    const { data: blockedIds } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('blocked', true);
+    const blocked = new Set((blockedIds || []).map(r => r.id));
+
+    res.json(data.filter(r => !blocked.has(r.farmer_id)).map(r => ({ ...formatCrop(r), featured: true })));
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch featured crops.' });
+  }
+});
+
 // GET /api/crops — public, with filters
 router.get('/', async (req, res) => {
   const { search, category, organic, available, minPrice, maxPrice, sortBy, farmerId } = req.query;
@@ -64,6 +89,14 @@ router.get('/', async (req, res) => {
     if (error) return res.status(500).json({ error: error.message });
 
     let list = data.map(formatCrop);
+
+    // Filter out blocked farmers
+    const { data: blockedIds } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('blocked', true);
+    const blocked = new Set((blockedIds || []).map(r => r.id));
+    list = list.filter(c => !blocked.has(c.farmerId));
 
     // Category filter (compare against the capitalized category name from crop_variety)
     if (category && category !== 'all') {
@@ -162,6 +195,22 @@ router.get('/varieties', async (req, res) => {
   }
 });
 
+// GET /api/crops/all — admin view all crops with featured flag
+router.get('/all', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`${PRODUCT_SELECT}, featured`)
+      .order('created_at', { ascending: false });
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json(data.map(r => ({ ...formatCrop(r), featured: r.featured ?? false })));
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch crops.' });
+  }
+});
+
 // GET /api/crops/:id
 router.get('/:id', async (req, res) => {
   try {
@@ -219,6 +268,25 @@ router.post('/', verifyToken, requireRole('farmer', 'both'), async (req, res) =>
     res.status(201).json(formatCrop(data));
   } catch {
     res.status(500).json({ error: 'Failed to add crop.' });
+  }
+});
+
+// PUT /api/crops/:id/featured — admin toggle featured
+router.put('/:id/featured', verifyToken, requireRole('admin'), async (req, res) => {
+  try {
+    const { featured } = req.body;
+    const { data, error } = await req.supabase
+      .from('products')
+      .update({ featured: !!featured, updated_at: new Date().toISOString() })
+      .eq('id', req.params.id)
+      .select(`${PRODUCT_SELECT}, featured`)
+      .single();
+
+    if (error) return res.status(500).json({ error: error.message });
+
+    res.json({ ...formatCrop(data), featured: data.featured });
+  } catch {
+    res.status(500).json({ error: 'Failed to update featured status.' });
   }
 });
 

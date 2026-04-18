@@ -35,6 +35,7 @@ import UsersManagement from './pages/admin/UsersManagement';
 import AdminCrops      from './pages/admin/AdminCrops';
 import AdminOrders     from './pages/admin/AdminOrders';
 import Reports         from './pages/admin/Reports';
+import AdminMarketPrices from './pages/admin/AdminMarketPrices';
 import AdminSettings   from './pages/admin/AdminSettings';
 
 /* ── Protected Route ── */
@@ -95,6 +96,7 @@ export default function App() {
       <Route path="/admin/users"      element={<ProtectedRoute allowedRole="admin"><UsersManagement /></ProtectedRoute>} />
       <Route path="/admin/crops"      element={<ProtectedRoute allowedRole="admin"><AdminCrops /></ProtectedRoute>} />
       <Route path="/admin/orders"     element={<ProtectedRoute allowedRole="admin"><AdminOrders /></ProtectedRoute>} />
+      <Route path="/admin/market-prices" element={<ProtectedRoute allowedRole="admin"><AdminMarketPrices /></ProtectedRoute>} />
       <Route path="/admin/reports"    element={<ProtectedRoute allowedRole="admin"><Reports /></ProtectedRoute>} />
       <Route path="/admin/settings"   element={<ProtectedRoute allowedRole="admin"><AdminSettings /></ProtectedRoute>} />
 

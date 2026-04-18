@@ -133,6 +133,10 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch user profile.' });
     }
 
+    if (profile.blocked) {
+      return res.status(403).json({ error: 'Your account has been blocked. Please contact support.' });
+    }
+
     res.json({ token, refreshToken: data.session.refresh_token, user: formatProfile(profile) });
   } catch {
     res.status(500).json({ error: 'Login failed. Please try again.' });

@@ -4,6 +4,15 @@ export const cropsAPI = {
   getAll: (params) =>
     client.get('/crops', { params }).then(r => r.data),
 
+  getAllAdmin: () =>
+    client.get('/crops/all').then(r => r.data),
+
+  getFeatured: () =>
+    client.get('/crops/featured').then(r => r.data),
+
+  toggleFeatured: (id, featured) =>
+    client.put(`/crops/${id}/featured`, { featured }).then(r => r.data),
+
   getById: (id) =>
     client.get(`/crops/${id}`).then(r => r.data),
 
