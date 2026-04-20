@@ -211,25 +211,7 @@ router.put('/:id/status', verifyToken, async (req, res) => {
       return res.status(403).json({ error: 'Only the order farmer or admin can update status.' });
     }
 
-    // When accepting, deduct quantity from product stock
-    if (dbStatus === 'accepted' && existing.status !== 'accepted') {
-      const currentStock = existing.product?.quantity ?? 0;
-      const newStock = currentStock - existing.quantity;
-
-      if (newStock < 0) {
-        return res.status(400).json({ error: 'Insufficient product stock to accept this order.' });
-      }
-
-      const { error: stockErr } = await db
-        .from('products')
-        .update({ quantity: newStock })
-        .eq('id', existing.product_id);
-
-      if (stockErr) {
-        return res.status(500).json({ error: 'Failed to update product stock.' });
-      }
-    }
-
+    // Update the order status
     const { data: updated, error: updateErr } = await db
       .from('orders')
       .update({ status: dbStatus })
@@ -239,6 +221,18 @@ router.put('/:id/status', verifyToken, async (req, res) => {
 
     if (updateErr) {
       return res.status(500).json({ error: updateErr.message });
+    }
+
+    // When accepting, deduct quantity from product stock via DB function (bypasses RLS)
+    if (dbStatus === 'accepted' && existing.status !== 'accepted') {
+      const { error: stockErr } = await supabase
+        .rpc('accept_order', { p_order_id: req.params.id });
+
+      if (stockErr) {
+        // Rollback: revert order status
+        await db.from('orders').update({ status: existing.status }).eq('id', req.params.id);
+        return res.status(400).json({ error: stockErr.message });
+      }
     }
 
     res.json(formatOrder(updated));
