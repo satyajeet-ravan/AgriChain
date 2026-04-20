@@ -32,8 +32,8 @@ export default function Contact() {
               {[
                 { icon: '📧', label: 'Email', value: 'support@agrichain.in' },
                 { icon: '📞', label: 'Toll Free', value: '1800-AGRI-HELP (24/7)' },
-                { icon: '💬', label: 'WhatsApp', value: '+91 98765 00000' },
-                { icon: '📍', label: 'Office', value: '42 Green Valley, Bengaluru 560001' },
+                { icon: '💬', label: 'WhatsApp', value: '+91 8087362397' },
+                { icon: '📍', label: 'Office', value: 'VJTI Hostel, Near Five Garden, Matunga' },
                 { icon: '🕐', label: 'Hours', value: 'Mon–Sat, 9 AM – 6 PM IST' },
               ].map(c => (
                 <div key={c.label} className="contact-item">
@@ -46,11 +46,11 @@ export default function Contact() {
               ))}
             </div>
 
-            <div className="map-placeholder">
+            {/* <div className="map-placeholder">
               <div className="map-icon">🗺️</div>
               <span>AgriChain HQ — Bengaluru, Karnataka</span>
               <span style={{ opacity: 0.6, fontSize: '0.78rem' }}>Map integration placeholder</span>
-            </div>
+            </div> */}
           </div>
 
           {/* Form */}

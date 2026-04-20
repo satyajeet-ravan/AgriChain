@@ -46,7 +46,7 @@ export default function Footer() {
             <h4>Contact</h4>
             <div className="footer-contact-item"><span>📧</span> support@agrichain.in</div>
             <div className="footer-contact-item"><span>📞</span> 1800-AGRI-HELP (Toll Free)</div>
-            <div className="footer-contact-item"><span>📍</span> 42, Green Valley, Bengaluru 560001</div>
+            <div className="footer-contact-item"><span>📍</span>VJTI Hostel, Near Five Garden, Matunga</div>
             <div className="footer-contact-item"><span>🕐</span> Mon–Sat, 9 AM – 6 PM</div>
           </div>
         </div>

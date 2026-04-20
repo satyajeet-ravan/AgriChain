@@ -6,10 +6,10 @@ const router = Router();
 
 // Static team data — kept hardcoded
 const teamMembers = [
-  { name: 'Priya Menon', role: 'CEO & Co-Founder', bio: 'Former agri-economist with 10 years of rural development experience.', avatar: 'https://randomuser.me/api/portraits/women/32.jpg' },
-  { name: 'Arjun Iyer', role: 'CTO & Co-Founder', bio: 'Full-stack engineer passionate about using tech to solve rural challenges.', avatar: 'https://randomuser.me/api/portraits/men/44.jpg' },
-  { name: 'Sneha Rao', role: 'Head of Operations', bio: 'Logistics expert who built supply chains across 12 Indian states.', avatar: 'https://randomuser.me/api/portraits/women/56.jpg' },
-  { name: 'Dev Kapoor', role: 'Head of Partnerships', bio: 'Connects farmers with enterprise buyers and government programs.', avatar: 'https://randomuser.me/api/portraits/men/78.jpg' },
+  { name: 'Parth Madrewar', role: 'CEO & Co-Founder', bio: 'Former agri-economist with 10 years of rural development experience.', avatar: 'https://res.cloudinary.com/dfpxwh1nz/image/upload/v1776667078/Parth_f7eyep.jpg' },
+  { name: 'Rajgaurav Patil', role: 'CTO & Co-Founder', bio: 'Full-stack engineer passionate about using tech to solve rural challenges.', avatar: 'https://res.cloudinary.com/dfpxwh1nz/image/upload/v1776667067/Rajgaurav_wuffgn.jpg' },
+  { name: 'Satyajeet Ravan', role: 'Head of Operations', bio: 'Logistics expert who built supply chains across 12 Indian states.', avatar: 'https://res.cloudinary.com/dfpxwh1nz/image/upload/v1776667069/Satyajeet_kxwj8j.png' },
+  { name: 'Shravan Patil', role: 'Head of Partnerships', bio: 'Connects farmers with enterprise buyers and government programs.', avatar: 'https://res.cloudinary.com/dfpxwh1nz/image/upload/v1776668099/WhatsApp_Image_2026-04-20_at_12.24.07_PM_h9dxdy.jpg' },
 ];
 
 // GET /api/stats/platform — public

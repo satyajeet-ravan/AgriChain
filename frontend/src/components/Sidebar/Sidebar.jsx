@@ -93,7 +93,7 @@ export default function Sidebar({ mobileOpen = false }) {
           {' '}{user.role}
         </div>
         <div className="sidebar-user-info">
-          <img src={user.avatar} alt={user.name} />
+          {/* <img src={user.avatar} alt={user.name} /> */}
           <div className="sidebar-user-text">
             <div className="s-name">{user.name}</div>
             <div className="s-email">{user.email}</div>

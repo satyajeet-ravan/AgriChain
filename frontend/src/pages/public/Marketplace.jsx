@@ -149,7 +149,7 @@ export default function Marketplace() {
               </div>
             </div>
 
-            <div className="filter-group">
+            {/* <div className="filter-group">
               <div className="filter-group-label">Location</div>
               {['Punjab', 'Maharashtra', 'Karnataka', 'Gujarat', 'Kerala'].map(loc => (
                 <div key={loc} className="filter-option">
@@ -157,7 +157,7 @@ export default function Marketplace() {
                   <label htmlFor={loc}>📍 {loc}</label>
                 </div>
               ))}
-            </div>
+            </div> */}
           </aside>
 
           {/* Products Grid */}
