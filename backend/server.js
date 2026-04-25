@@ -20,7 +20,13 @@ process.on('unhandledRejection', err => { console.error('Unhandled Rejection:', 
 const app = express();
 
 // Middleware
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173", credentials: true }));
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://agri-chain-two.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Health check
